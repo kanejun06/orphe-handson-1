@@ -302,8 +302,8 @@
   <!-- ============ INTRO: roles ============ -->
   <section class="block" id="intro" style="border-top:none">
     <div class="blocklabel"><span class="num" style="background:var(--accent2);color:#fff">START</span><span class="sub">5分</span></div>
-    <h2 class="bh">5人での役割分担</h2>
-    <p class="blockdesc">ORPHE CORE は1グループ1台ですが、Copilotと話す・コードを貼る・実行することは全員でできます。下の役割を <b>15〜20分ごとに時計回りで交代</b> し、全員が一度はドライバーとプレイヤーを体験してください。</p>
+    <h2 class="bh">5人での進め方（役割はゆるめでOK）</h2>
+    <p class="blockdesc">ORPHE CORE は1グループ1台ですが、Copilotと話す・コードを貼る・実行することは全員でできます。下の役割は <b>あくまで目安</b>。きっちり固定したり時間で交代したりしなくて大丈夫です。いちばん大事なのは、<b>グループ全員で意見を出し合い、それをアプリに反映させること</b>。「こうしたい」をどんどん出して、Copilotへの指示に変えていきましょう。</p>
     <table class="roles">
       <tr><th>ドライバー</th><td>Copilotに指示を打ち込み、出てきたコードを貼って ▶ Run する人</td></tr>
       <tr><th>ナビゲーター</th><td>「次はこう頼もう」と、指示文を一緒に考える人</td></tr>
@@ -311,16 +311,6 @@
       <tr><th>オブザーバー</th><td>動きと画面のズレ・気づきをメモする人</td></tr>
       <tr><th>タイムキーパー</th><td>時間管理＋スクショ・発表メモ係</td></tr>
     </table>
-
-    <div class="note warn">
-      <div class="h">⚠ つながらない時はまずこの4つ</div>
-      <ul>
-        <li><b>① Chrome / Edge</b> で開いているか（Safari・Firefoxは不可）。</li>
-        <li><b>② p5.js Web Editor は「▶ Run」した後、プレビュー画面内のボタンから接続</b>。それでもダイアログが出なければ、画面を新しいタブで開き直す。</li>
-        <li><b>③ 接続は必ず画面のボタンを自分でクリックして開始</b>（自動接続はブラウザの仕様でできません）。</li>
-        <li><b>④ ORPHE本体の電源がON</b>か、他のPCと接続済みになっていないか確認。</li>
-      </ul>
-    </div>
   </section>
 
   <!-- ============ COPILOT BASICS ============ -->
@@ -426,20 +416,26 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
         <div class="h">💡 これは「全部入り1ファイル」です</div>
         p5.js Web Editor は通常 index.html / sketch.js / style.css の3ファイル構成ですが、このスターターは <b>index.html 1枚に全部</b>書かれています。だから <code class="inline">sketch.js</code> は使わず、<b>編集はすべて index.html の中で</b>行います。
       </div>
-      <div class="note tip">
-        <div class="h">💡 接続ダイアログが出ない時</div>
-        Run後のプレビュー枠内でボタンが効かない場合は、ページを新しいタブで開き直してから接続してみてください。Web Bluetooth は「ユーザーがボタンを押した瞬間」しか機器選択を出せない仕様です。CORE未接続でも、<b>キーボードの↑↓キー</b>で左パドルを動かして動作確認できます。
+      <div class="note warn">
+        <div class="h">⚠ つながらない時はまずこの4つ</div>
+        <ul>
+          <li><b>① Chrome / Edge</b> で開いているか（Safari・Firefoxは不可）。</li>
+          <li><b>② p5.js Web Editor は「▶ Run」した後、プレビュー画面内のボタンから接続</b>。それでもダイアログが出なければ、画面を新しいタブで開き直す。</li>
+          <li><b>③ 接続は必ず画面のボタンを自分でクリックして開始</b>（自動接続はブラウザの仕様でできません）。</li>
+          <li><b>④ ORPHE本体の電源がON</b>か、他のPCと接続済みになっていないか確認。</li>
+          <li><b>⑤ CORE未接続でも、キーボードの↑↓キー</b>で左パドルを動かして動作確認できます。</li>
+        </ul>
       </div>
     </div>
 
     <div class="card">
-      <h3><span class="chip">仕組み</span>中身は「Safe Area」と「アプリケーションエリア」に分かれています</h3>
-      <p>スターターHTMLは、大きく <b>Safe Area（接続まわり）</b> と <b>アプリケーションエリア（アプリ本体）</b> の2つに分かれています。接続やセンサーの受信は Safe Area が自動でやってくれるので、改造するのはアプリケーションエリアだけ。細かい仕組みを覚える必要はありません。</p>
+      <h3><span class="chip">仕組み</span>中身は「セーフエリア」と「アプリケーションエリア」に分かれています</h3>
+      <p>スターターHTMLは、大きく <b>セーフエリア（接続まわり）</b> と <b>アプリケーションエリア（アプリ本体）</b> の2つに分かれています。接続やセンサーの受信は セーフエリア が自動でやってくれるので、改造するのはアプリケーションエリアだけ。細かい仕組みを覚える必要はありません。</p>
     </div>
 
     <div class="card">
       <h3><span class="chip">定型ヘッダー文</span>すべてのお願いの先頭に貼る（全STEP共通）</h3>
-      <p>このスターターを安全に改造させるための前提文です。<b>Copilotに改造を頼むときは、まずこれを先頭に貼ってください。</b>「Safe Area（接続まわり）は触らせない・アプリケーションエリアだけ直す・全文で返す」を守らせます。</p>
+      <p>このスターターを安全に改造させるための前提文です。<b>Copilotに改造を頼むときは、まずこれを先頭に貼ってください。</b>「セーフエリア（接続まわり）は触らせない・アプリケーションエリアだけ直す・全文で返す」を守らせます。</p>
       <div class="codewrap">
         <div class="codehead"><span class="fn">header_prompt.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
         <pre class="prompt"># 前提条件（必ず守ってください）
