@@ -25,15 +25,15 @@
       - p5.js game canvas.
       - text panels showing connection status and sensor values.
       - Chart.js graphs showing raw Acceleration, Gyro, and Euler Angle values.
-    - COPILOT EDIT AREA 1:
+    - アプリケーションエリア 1:
       - GAME settings such as speed, size, colors, winning score, AI behavior.
-    - COPILOT EDIT AREA 2:
+    - アプリケーションエリア 2:
       - sensorToPaddleY() and aiPaddleY().
       - Change these to map ORPHE sensor values to game controls.
-    - COPILOT EDIT AREA 3:
+    - アプリケーションエリア 3:
       - Game classes and drawing logic.
       - Change Ball, Paddle, drawGame(), scoring, obstacles, goals, rules, etc.
-    - SAFE FOUNDATION AREA:
+    - セーフエリア:
       - ORPHE CORE connection, sensor callbacks, normalized quaternion handling,
         Chart.js graph setup, and CoreToolkit setup.
       - Avoid deleting this unless the user explicitly asks to rewrite the
@@ -60,7 +60,7 @@
       CoreToolkit.js, p5.js, or Chart.js.
 
     Good Copilot prompts for beginners:
-    - "Only edit COPILOT EDIT AREA 1, 2, and 3. Keep SAFE FOUNDATION AREA.
+    - "Only edit アプリケーションエリア 1, 2, and 3. Keep セーフエリア.
        Change this into a game where the player jumps when CORE 01 moves upward."
     - "Keep the ORPHE connection and charts. Replace the ping pong game with a
        dodge game controlled by sensors[0].euler.pitch."
@@ -71,7 +71,7 @@
 
     Safe editing rule:
     - If a generated change breaks Bluetooth connection, restore everything in
-      SAFE FOUNDATION AREA and only modify COPILOT EDIT AREA blocks.
+      セーフエリア and only modify アプリケーションエリア blocks.
   -->
   <head>
     <meta charset="utf-8">
@@ -276,13 +276,13 @@
         Paste this entire file into p5.js Web Editor's index.html.
 
         Example prompts for Copilot:
-        - "Only edit COPILOT EDIT AREA. Change this into a jump game."
-        - "Keep SAFE FOUNDATION AREA. Change the game into a dodge game."
+        - "Only edit アプリケーションエリア. Change this into a jump game."
+        - "Keep セーフエリア. Change the game into a dodge game."
         - "Only change sensorToPaddleY() so steps control the paddle."
       */
 
       // ============================================================
-      // COPILOT EDIT AREA 1: game settings
+      // アプリケーションエリア 1: game settings
       // Beginners and Copilot should start by changing only this block.
       // ============================================================
       const GAME = {
@@ -302,7 +302,7 @@
       };
 
       // ============================================================
-      // SAFE FOUNDATION AREA: sensor state storage
+      // セーフエリア: sensor state storage
       // Do not delete this. Game code can read values from sensors[0] and sensors[1].
       // ============================================================
       const sensors = [
@@ -328,7 +328,7 @@
       }
 
       // ============================================================
-      // COPILOT EDIT AREA 2: convert sensor values into game controls
+      // アプリケーションエリア 2: convert sensor values into game controls
       // Change this block to try different control mappings in the same game.
       // ============================================================
       function sensorToPaddleY(coreId, paddleHeight) {
@@ -355,7 +355,7 @@
       }
 
       // ============================================================
-      // COPILOT EDIT AREA 3: game logic
+      // アプリケーションエリア 3: game logic
       // Edit the classes below and drawGame() to make a new motion game.
       // ============================================================
       let ball;
@@ -533,7 +533,7 @@
       }
 
       // ============================================================
-      // SAFE FOUNDATION AREA: p5.js setup/draw
+      // セーフエリア: p5.js setup/draw
       // Foundation for CoreToolkit, sensor callbacks, and Chart.js. Keep this block.
       // ============================================================
       function setup() {
@@ -581,7 +581,7 @@
       }
 
       // ============================================================
-      // SAFE FOUNDATION AREA: ORPHE CORE + CoreToolkit
+      // セーフエリア: ORPHE CORE + CoreToolkit
       // Keep the code below when asking Copilot to change only the game.
       // ============================================================
       function setupCoreToolkit() {
@@ -745,7 +745,7 @@
       }
 
       // ============================================================
-      // SAFE FOUNDATION AREA: Chart.js raw sensor graph
+      // セーフエリア: Chart.js raw sensor graph
       // Bottom graphs for watching raw sensor changes while building the game.
       // ============================================================
       const charts = [

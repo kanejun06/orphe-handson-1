@@ -236,7 +236,7 @@
       <a href="#copilot-basics"><span class="n">BASIC</span><div class="t">Copilotの話しかけ方</div><div class="s">vibe coding の基本</div></a>
       <a href="#b1"><span class="n">BLOCK 1</span><div class="t">つなぐ</div><div class="s">スターターを貼って接続</div></a>
       <a href="#b2"><span class="n">BLOCK 2</span><div class="t">観察する</div><div class="s">内蔵グラフで値を見る</div></a>
-      <a href="#b3"><span class="n">BLOCK 3</span><div class="t">改造する</div><div class="s">EDIT AREAをCopilotで</div></a>
+      <a href="#b3"><span class="n">BLOCK 3</span><div class="t">改造する</div><div class="s">アプリケーションエリアをCopilotで</div></a>
       <a href="#inspo"><span class="n">EXAMPLES</span><div class="t">こんなものも作れる</div><div class="s">公式作例 / 企画ブレスト</div></a>
       <a href="#appendix"><span class="n">APPENDIX</span><div class="t">関数名 早見表</div><div class="s">取れるデータ一覧</div></a>
     </nav>
@@ -289,7 +289,7 @@
         <tr><th>0:10–0:25</th><td><b>BLOCK 1 つなぐ。</b>スターターHTMLを貼って Run、CORE に接続。サンプルゲームで遊んで全員「つながった！」を体験。</td></tr>
         <tr><th>0:25–0:40</th><td><b>BLOCK 2 観察する。</b>内蔵グラフを見ながら足を動かし、どの動きがどの値に効くかを確認。</td></tr>
         <tr><th>0:40–0:50</th><td><b>企画ブレスト（EXAMPLES）。</b>作例に触れ、Copilotと相談して作るものを1つに決める。</td></tr>
-        <tr><th>0:50–1:15</th><td><b>BLOCK 3 改造する（制作）。</b>EDIT AREAをCopilotで1つずつ改造して、企画を形に。</td></tr>
+        <tr><th>0:50–1:15</th><td><b>BLOCK 3 改造する（制作）。</b>アプリケーションエリアをCopilotで1つずつ改造して、企画を形に。</td></tr>
         <tr><th>1:15–1:30</th><td><b>発表・ふりかえり。</b>各グループ1〜2分でデモ、Copilotの使い方を共有。</td></tr>
       </table>
       <p style="color:var(--muted)">※ つまずいたBLOCKがあっても先に進んでOK。「一番簡単な1つ」に絞るのが、90分で完成させるコツです。</p>
@@ -334,7 +334,7 @@
       <p>改造を頼むときは、<b>定型ヘッダー文＋いま動いているHTML全文</b>を貼ってから、やりたいことを伝えます。</p>
       <div class="chat">
         <span class="who">あなた → Copilot</span>
-        <div class="bubble me">（前提条件＋スターターHTMLを貼った後）<br>このスターターの COPILOT EDIT AREA だけを変えて、パドルを「向き」ではなく「踏み込みの強さ（acc.y）」で動かしたいです。SAFE FOUNDATION AREA は触らないで、HTML全文で返してください。</div>
+        <div class="bubble me">（前提条件＋スターターHTMLを貼った後）<br>このスターターの アプリケーションエリア だけを変えて、パドルを「向き」ではなく「踏み込みの強さ（acc.y）」で動かしたいです。セーフエリア は触らないで、HTML全文で返してください。</div>
       </div>
     </div>
 
@@ -344,7 +344,7 @@
         <p><b>● 接続ボタンを押しても何も起きない</b></p>
         <pre class="prompt">接続ダイアログが出ません。Chromeで、p5のプレビューを別タブで開いています。
 原因の候補を3つ、初心者向けに教えてください。
-（SAFE FOUNDATION AREA は変更しないでください）</pre>
+（セーフエリア は変更しないでください）</pre>
         <p style="margin-top:14px"><b>● 赤いエラーが出た</b></p>
         <pre class="prompt">（エラー文をそのまま貼って）
 このエラーが出ました。原因と直し方を初心者向けに1つずつ教えて。
@@ -352,16 +352,16 @@
         <p style="margin-top:14px"><b>● 改造したら動かなくなった／戻したい</b></p>
         <pre class="prompt">さっきの改造で動かなくなりました。
 直前に □□ を変えました。元の動く状態に戻したうえで、
-今度は SAFE FOUNDATION AREA を触らずに、もう一度 △△ だけ変えてください。
+今度は セーフエリア を触らずに、もう一度 △△ だけ変えてください。
 HTML全文で出してください。</pre>
         <p style="margin-top:14px"><b>● 操作の反応が鈍い／敏感すぎる</b></p>
         <pre class="prompt">操作の反応が鈍い（または敏感すぎる）ので、
-COPILOT EDIT AREA 2 の感度だけ調整してください。
-SAFE FOUNDATION AREA は触らないでください。</pre>
+アプリケーションエリア 2 の感度だけ調整してください。
+セーフエリア は触らないでください。</pre>
         <p style="margin-top:14px"><b>● 値がときどき飛ぶ・カクつく</b></p>
         <pre class="prompt">動きがときどきカクつきます。
 ORPHE本体を体に近づける・充電する、で改善することがあります。
-それでも気になる場合、COPILOT EDIT AREA の中だけで
+それでも気になる場合、アプリケーションエリア の中だけで
 値を少しなめらかにする処理を入れてください。</pre>
         <p style="margin-top:14px"><b>● 接続が切れる</b></p>
         <pre class="prompt">途中で接続が切れます。スターターには自動再接続があるはずなので、
@@ -441,8 +441,8 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
         <pre class="prompt"># 前提条件（必ず守ってください）
 - これは ORPHE CORE + CoreToolkit.js のスターターHTML（1ファイル）です。
   これから渡すHTML全体をベースに改造してください。
-- 編集してよいのは COPILOT EDIT AREA 1・2・3 だけです。
-  SAFE FOUNDATION AREA（接続・センサー受信・グラフ・クォータニオン処理）は
+- 編集してよいのは アプリケーションエリア 1・2・3 だけです。
+  セーフエリア（接続・センサー受信・グラフ・クォータニオン処理）は
   絶対に変更・削除しないでください。
 - 新しく new Orphe() を作らないでください。接続は CoreToolkit が
   bles[0] / bles[1] で既に用意しています。
@@ -499,12 +499,12 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
         <div class="codehead"><span class="fn">step3.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
         <pre class="prompt">（先頭に定型ヘッダー文＋スターターHTML全文を貼ったうえで）
 
-COPILOT EDIT AREA 2 の sensorToPaddleY() だけを変えて、
+アプリケーションエリア 2 の sensorToPaddleY() だけを変えて、
 パドルを「向き(pitch)」ではなく「加速度の上下(acc.y)」で
 動かすようにしてください。
 動きが急すぎる/鈍いときに調整できるよう、感度の数値も
 分かりやすくコメントしてください。
-SAFE FOUNDATION AREA は変更しないでください。</pre>
+セーフエリア は変更しないでください。</pre>
       </div>
       <div class="note tip">
         <div class="h">💡 調整もCopilotに頼める</div>
@@ -519,10 +519,10 @@ SAFE FOUNDATION AREA は変更しないでください。</pre>
         <div class="codehead"><span class="fn">step4.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
         <pre class="prompt">（先頭に定型ヘッダー文＋いま動いているHTML全文を貼ったうえで）
 
-COPILOT EDIT AREA 1・2・3 だけを変えて、
+アプリケーションエリア 1・2・3 だけを変えて、
 〇〇〇〇（作りたいゲームを一言で）にしてください。
 まず △△△△ の部分だけ変えて、他はできるだけ残してください。
-SAFE FOUNDATION AREA（接続・センサー・グラフ）は触らないでください。
+セーフエリア（接続・センサー・グラフ）は触らないでください。
 改造後のHTMLを全文で出してください。</pre>
       </div>
       <div class="note tip">
