@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!--
+    COPILOT / AI ASSISTANT METADATA
+    ============================================================
+    Purpose:
+    - This is a single-file p5.js Web Editor starter for making motion games
+      with ORPHE CORE and ORPHE-CORE.js.
+    - A beginner should be able to paste this whole file into p5.js Web Editor's
+      index.html, connect ORPHE CORE from Chrome, and immediately play a game.
+    - The current game is motion-controlled ping pong. It is intentionally a
+      starter, not a polished final game.
+
+    Runtime:
+    - Paste the entire file into p5.js Web Editor > index.html.
+    - Open the preview in Chrome, not Safari, because Web Bluetooth is required.
+    - Connect CORE 01 first. CORE 02 is optional; if it is not connected, the
+      right paddle is controlled by simple AI.
+    - The page imports p5.js, Chart.js, ORPHE-CORE.js, BleSharedBridge.js, and
+      CoreToolkit.js from public CDNs / GitHub.
+
+    Program structure:
+    - HTML body:
+      - CoreToolkit connection UI for CORE 01 and CORE 02.
+      - p5.js game canvas.
+      - text panels showing connection status and sensor values.
+      - Chart.js graphs showing raw Acceleration, Gyro, and Euler Angle values.
+    - COPILOT EDIT AREA 1:
+      - GAME settings such as speed, size, colors, winning score, AI behavior.
+    - COPILOT EDIT AREA 2:
+      - sensorToPaddleY() and aiPaddleY().
+      - Change these to map ORPHE sensor values to game controls.
+    - COPILOT EDIT AREA 3:
+      - Game classes and drawing logic.
+      - Change Ball, Paddle, drawGame(), scoring, obstacles, goals, rules, etc.
+    - SAFE FOUNDATION AREA:
+      - ORPHE CORE connection, sensor callbacks, normalized quaternion handling,
+        Chart.js graph setup, and CoreToolkit setup.
+      - Avoid deleting this unless the user explicitly asks to rewrite the
+        hardware connection layer.
+
+    Sensor data available to games:
+    - sensors[0] is CORE 01. sensors[1] is CORE 02.
+    - sensors[id].euler.pitch / roll / yaw: orientation values.
+    - sensors[id].acc.x / y / z: acceleration values.
+    - sensors[id].gyro.x / y / z: gyroscope values.
+    - sensors[id].steps: step count.
+    - sensors[id].gait, stride, footAngle, pronation, landingImpact are also
+      available when STEP_ANALYSIS data arrives.
+
+    Important implementation notes:
+    - Use gotQuat and normalizeQuaternion() before using Euler angles. This
+      keeps CORE 2.0 and CORE 3.0 behavior more stable.
+    - Do not create a new Orphe() instance in custom game code. CoreToolkit.js
+      already provides bles[0] and bles[1].
+    - Do not rename toolkit0, toolkit1, gameCanvas, chartAcc0, chartGyro0,
+      chartEuler0, chartAcc1, chartGyro1, chartEuler1 unless you also update the
+      setup code.
+    - Do not remove the script tags for ORPHE-CORE.js, BleSharedBridge.js,
+      CoreToolkit.js, p5.js, or Chart.js.
+
+    Good Copilot prompts for beginners:
+    - "Only edit COPILOT EDIT AREA 1, 2, and 3. Keep SAFE FOUNDATION AREA.
+       Change this into a game where the player jumps when CORE 01 moves upward."
+    - "Keep the ORPHE connection and charts. Replace the ping pong game with a
+       dodge game controlled by sensors[0].euler.pitch."
+    - "Change sensorToPaddleY() so the paddle is controlled by steps instead of
+       pitch."
+    - "Add coins and a timer, but do not touch setupCoreToolkit(),
+       attachSensorCallbacks(), setupCharts(), or normalizeQuaternion()."
+
+    Safe editing rule:
+    - If a generated change breaks Bluetooth connection, restore everything in
+      SAFE FOUNDATION AREA and only modify COPILOT EDIT AREA blocks.
+  -->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ORPHE CORE Motion Ping Pong Starter</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css"
+    >
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.0/chart.min.js"
+      integrity="sha512-R60W3LgKdvvfwbGbqKusRu/434Snuvr9/Flhtoq9cj1LQ9P4HFKParULqOCAisHk/J4zyaEWWjiWIMuP13vXEg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #10131a;
+        color: #eef3ff;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        margin: 0 auto;
+        max-width: 1080px;
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin: 0 0 12px;
+      }
+
+      .toolkit-row {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        margin-bottom: 12px;
+      }
+
+      .toolkit-box,
+      .panel {
+        background: #171d29;
+        border: 1px solid #2d3648;
+        padding: 12px;
+      }
+
+      .toolkit-box {
+        min-height: 58px;
+      }
+
+      #ble-support-message {
+        display: none;
+      }
+
+      #gameCanvas {
+        margin: 12px 0;
+      }
+
+      canvas {
+        display: block;
+        max-width: 100%;
+      }
+
+      .status-grid,
+      .chart-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+
+      .chart-column {
+        display: grid;
+        gap: 12px;
+      }
+
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        line-height: 1.9;
+      }
+
+      .metric span:first-child {
+        color: #9ca9bf;
+      }
+
+      .chart-box {
+        background: #ffffff;
+        border: 1px solid #d8dee8;
+        color: #18202f;
+        padding: 12px;
+      }
+
+      .chart-title {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ORPHE CORE Motion Ping Pong Starter</h1>
+
+      <div class="toolkit-row">
+        <div class="toolkit-box">
+          <div id="toolkit0"></div>
+        </div>
+        <div class="toolkit-box">
+          <div id="toolkit1"></div>
+        </div>
+      </div>
+
+      <div id="ble-support-message" class="alert alert-warning">
+        Web Bluetooth is disabled in this browser. Open this page in Chrome to connect ORPHE CORE.
+      </div>
+
+      <div id="gameCanvas"></div>
+
+      <section class="status-grid">
+        <div class="panel">
+          <div class="metric"><span>CORE 01</span><strong id="status0">waiting</strong></div>
+          <div class="metric"><span>control</span><strong id="control0">pitch</strong></div>
+          <div class="metric"><span>steps</span><strong id="steps0">0</strong></div>
+          <div class="metric"><span>acc x/y/z</span><strong id="acc0">0 / 0 / 0</strong></div>
+        </div>
+        <div class="panel">
+          <div class="metric"><span>CORE 02</span><strong id="status1">optional</strong></div>
+          <div class="metric"><span>control</span><strong id="control1">pitch or AI</strong></div>
+          <div class="metric"><span>steps</span><strong id="steps1">0</strong></div>
+          <div class="metric"><span>acc x/y/z</span><strong id="acc1">0 / 0 / 0</strong></div>
+        </div>
+      </section>
+
+      <section class="chart-grid mt-3">
+        <div class="chart-column">
+          <div class="chart-box">
+            <div class="chart-title">CORE 01 Acceleration</div>
+            <canvas id="chartAcc0"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">CORE 01 Gyro</div>
+            <canvas id="chartGyro0"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">CORE 01 Euler Angle (normalized)</div>
+            <canvas id="chartEuler0"></canvas>
+          </div>
+        </div>
+        <div class="chart-column">
+          <div class="chart-box">
+            <div class="chart-title">CORE 02 Acceleration</div>
+            <canvas id="chartAcc1"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">CORE 02 Gyro</div>
+            <canvas id="chartGyro1"></canvas>
+          </div>
+          <div class="chart-box">
+            <div class="chart-title">CORE 02 Euler Angle (normalized)</div>
+            <canvas id="chartEuler1"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script
+      src="https://cdn.jsdelivr.net/gh/Orphe-OSS/ORPHE-CORE.js@main/js/ORPHE-CORE.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/gh/Orphe-OSS/ORPHE-CORE.js@main/js/BleSharedBridge.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/gh/Orphe-OSS/ORPHE-CORE.js@main/js/CoreToolkit.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      /*
+        ORPHE CORE Motion Game Starter
+        ------------------------------------------------------------
+        Paste this entire file into p5.js Web Editor's index.html.
+
+        Example prompts for Copilot:
+        - "Only edit COPILOT EDIT AREA. Change this into a jump game."
+        - "Keep SAFE FOUNDATION AREA. Change the game into a dodge game."
+        - "Only change sensorToPaddleY() so steps control the paddle."
+      */
+
+      // ============================================================
+      // COPILOT EDIT AREA 1: game settings
+      // Beginners and Copilot should start by changing only this block.
+      // ============================================================
+      const GAME = {
+        title: "MOTION PING PONG",
+        winningScore: 3,
+        ballSize: 18,
+        ballSpeed: 5,
+        paddleWidth: 14,
+        paddleHeight: 84,
+        paddleMargin: 24,
+        paddleSensitivity: 1.2,
+        useSecondCore: true,
+        useAiWhenSecondCoreIsMissing: true,
+        aiSpeed: 4.2,
+        backgroundLeft: [249, 112, 82],
+        backgroundRight: [72, 138, 236],
+      };
+
+      // ============================================================
+      // SAFE FOUNDATION AREA: sensor state storage
+      // Do not delete this. Game code can read values from sensors[0] and sensors[1].
+      // ============================================================
+      const sensors = [
+        makeSensorState("CORE 01", "waiting"),
+        makeSensorState("CORE 02", "optional"),
+      ];
+
+      function makeSensorState(name, status) {
+        return {
+          name,
+          status,
+          connected: false,
+          steps: 0,
+          euler: { pitch: 0, roll: 0, yaw: 0 },
+          acc: { x: 0, y: 0, z: 0 },
+          gyro: { x: 0, y: 0, z: 0 },
+          gait: { type: 0, distance: 0 },
+          stride: { x: 0, y: 0, z: 0 },
+          footAngle: 0,
+          pronation: { x: 0, y: 0, z: 0 },
+          landingImpact: 0,
+        };
+      }
+
+      // ============================================================
+      // COPILOT EDIT AREA 2: convert sensor values into game controls
+      // Change this block to try different control mappings in the same game.
+      // ============================================================
+      function sensorToPaddleY(coreId, paddleHeight) {
+        const sensor = sensors[coreId];
+
+        // pitch is the ORPHE CORE tilt value. It often moves around -1.5 to 1.5.
+        const pitch = sensor.euler.pitch * GAME.paddleSensitivity;
+
+        // p5.js map() converts the sensor value into a screen Y position.
+        return constrain(
+          map(pitch, -1.2, 1.2, height - paddleHeight, 0),
+          0,
+          height - paddleHeight
+        );
+      }
+
+      function aiPaddleY(currentY, targetY, paddleHeight) {
+        const desiredY = targetY - paddleHeight / 2;
+        return constrain(
+          lerp(currentY, desiredY, 0.04 * GAME.aiSpeed),
+          0,
+          height - paddleHeight
+        );
+      }
+
+      // ============================================================
+      // COPILOT EDIT AREA 3: game logic
+      // Edit the classes below and drawGame() to make a new motion game.
+      // ============================================================
+      let ball;
+      let leftPaddle;
+      let rightPaddle;
+      let scoreLeft = 0;
+      let scoreRight = 0;
+      let gameState = "ready";
+      let messageText = "Connect CORE 01, then move it to play.";
+
+      class Paddle {
+        constructor(side) {
+          this.side = side;
+          this.w = GAME.paddleWidth;
+          this.h = GAME.paddleHeight;
+          this.x = side === "left" ? GAME.paddleMargin : width - GAME.paddleMargin - this.w;
+          this.y = height / 2 - this.h / 2;
+        }
+
+        update() {
+          this.h = GAME.paddleHeight;
+          this.x = this.side === "left" ? GAME.paddleMargin : width - GAME.paddleMargin - this.w;
+
+          if (this.side === "left") {
+            this.y = sensorToPaddleY(0, this.h);
+            return;
+          }
+
+          if (GAME.useSecondCore && sensors[1].connected) {
+            this.y = sensorToPaddleY(1, this.h);
+          } else if (GAME.useAiWhenSecondCoreIsMissing) {
+            this.y = aiPaddleY(this.y, ball.y, this.h);
+          }
+        }
+
+        draw() {
+          noStroke();
+          fill(this.side === "left" ? color(255, 238, 180) : color(190, 225, 255));
+          rect(this.x, this.y, this.w, this.h, 4);
+        }
+      }
+
+      class Ball {
+        constructor() {
+          this.reset(random([-1, 1]));
+        }
+
+        reset(direction) {
+          this.size = GAME.ballSize;
+          this.x = width / 2;
+          this.y = height / 2;
+          this.vx = GAME.ballSpeed * direction;
+          this.vy = random(-GAME.ballSpeed, GAME.ballSpeed);
+          if (abs(this.vy) < 1.5) this.vy = 2;
+        }
+
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+
+          if (this.y < this.size / 2 || this.y > height - this.size / 2) {
+            this.vy *= -1;
+          }
+
+          this.checkPaddle(leftPaddle);
+          this.checkPaddle(rightPaddle);
+
+          if (this.x < -this.size) {
+            scoreRight++;
+            this.afterScore(1);
+          }
+
+          if (this.x > width + this.size) {
+            scoreLeft++;
+            this.afterScore(-1);
+          }
+        }
+
+        checkPaddle(paddle) {
+          const hitX = this.x > paddle.x && this.x < paddle.x + paddle.w;
+          const hitY = this.y > paddle.y && this.y < paddle.y + paddle.h;
+          if (!hitX || !hitY) return;
+
+          const offset = (this.y - (paddle.y + paddle.h / 2)) / (paddle.h / 2);
+          this.vx *= -1.06;
+          this.vy = offset * GAME.ballSpeed * 1.4;
+          this.x = paddle.side === "left" ? paddle.x + paddle.w + this.size : paddle.x - this.size;
+        }
+
+        afterScore(direction) {
+          if (scoreLeft >= GAME.winningScore || scoreRight >= GAME.winningScore) {
+            gameState = "finished";
+            messageText = scoreLeft > scoreRight ? "LEFT PLAYER WINS" : "RIGHT PLAYER WINS";
+            return;
+          }
+
+          messageText = "Move to continue";
+          this.reset(direction);
+        }
+
+        draw() {
+          noStroke();
+          fill(255);
+          circle(this.x, this.y, this.size);
+        }
+      }
+
+      function drawGame() {
+        drawBackground();
+        drawCenterLine();
+        drawScore();
+
+        leftPaddle.update();
+        rightPaddle.update();
+
+        if (gameState !== "finished") {
+          ball.update();
+        }
+
+        leftPaddle.draw();
+        rightPaddle.draw();
+        ball.draw();
+        drawMessage();
+      }
+
+      function drawBackground() {
+        for (let x = 0; x < width; x += 2) {
+          const amount = x / width;
+          const r = lerp(GAME.backgroundLeft[0], GAME.backgroundRight[0], amount);
+          const g = lerp(GAME.backgroundLeft[1], GAME.backgroundRight[1], amount);
+          const b = lerp(GAME.backgroundLeft[2], GAME.backgroundRight[2], amount);
+          stroke(r, g, b);
+          line(x, 0, x, height);
+        }
+
+        noStroke();
+        fill(255, 255, 255, 28);
+        textAlign(CENTER, CENTER);
+        textSize(height * 0.8);
+        text("A", width * 0.25, height * 0.5);
+        text("B", width * 0.75, height * 0.5);
+      }
+
+      function drawCenterLine() {
+        stroke(255, 255, 255, 160);
+        strokeWeight(2);
+        drawingContext.setLineDash([10, 12]);
+        line(width / 2, 0, width / 2, height);
+        drawingContext.setLineDash([]);
+      }
+
+      function drawScore() {
+        noStroke();
+        fill(255);
+        textAlign(CENTER, TOP);
+        textSize(38);
+        text(scoreLeft + " - " + scoreRight, width / 2, 18);
+      }
+
+      function drawMessage() {
+        if (!messageText) return;
+        noStroke();
+        fill(255, 255, 255, 220);
+        textAlign(CENTER, CENTER);
+        textSize(18);
+        text(messageText, width / 2, height - 28);
+      }
+
+      function resetGame() {
+        scoreLeft = 0;
+        scoreRight = 0;
+        gameState = "playing";
+        messageText = "";
+        ball.reset(random([-1, 1]));
+      }
+
+      // ============================================================
+      // SAFE FOUNDATION AREA: p5.js setup/draw
+      // Foundation for CoreToolkit, sensor callbacks, and Chart.js. Keep this block.
+      // ============================================================
+      function setup() {
+        const canvas = createCanvas(gameCanvasWidth(), 420);
+        canvas.parent("gameCanvas");
+        textFont("sans-serif");
+
+        ball = new Ball();
+        leftPaddle = new Paddle("left");
+        rightPaddle = new Paddle("right");
+
+        setupCoreToolkit();
+        setupCharts();
+        updateStatusText();
+      }
+
+      function draw() {
+        drawGame();
+        updateChartsIfNeeded();
+      }
+
+      function windowResized() {
+        resizeCanvas(gameCanvasWidth(), 420);
+        leftPaddle = new Paddle("left");
+        rightPaddle = new Paddle("right");
+        ball.reset(random([-1, 1]));
+      }
+
+      function mousePressed() {
+        if (gameState === "finished") resetGame();
+      }
+
+      function keyPressed() {
+        if (key === "r" || key === "R") resetGame();
+
+        // Keyboard fallback for testing without CORE before the workshop.
+        if (keyCode === UP_ARROW) sensors[0].euler.pitch += 0.15;
+        if (keyCode === DOWN_ARROW) sensors[0].euler.pitch -= 0.15;
+      }
+
+      function gameCanvasWidth() {
+        const parent = document.querySelector("#gameCanvas");
+        const parentWidth = parent ? parent.clientWidth : 900;
+        return Math.max(320, Math.min(900, parentWidth));
+      }
+
+      // ============================================================
+      // SAFE FOUNDATION AREA: ORPHE CORE + CoreToolkit
+      // Keep the code below when asking Copilot to change only the game.
+      // ============================================================
+      function setupCoreToolkit() {
+        const notification = "STEP_ANALYSIS_AND_SENSOR_VALUES";
+        const options = {
+          autoReconnect: true,
+          reconnectIntervalMs: 3000,
+          reconnectMaxAttempts: 120,
+        };
+
+        for (let i = 0; i < 2; i++) {
+          bles[i].setup();
+          buildCoreToolkit(
+            document.querySelector("#toolkit" + i),
+            "CORE 0" + (i + 1),
+            i,
+            notification,
+            options
+          );
+
+          const modalTitle = document.querySelector("#settings_modal" + i + " .modal-title");
+          if (modalTitle) modalTitle.textContent = "CORE 0" + (i + 1) + " Settings";
+
+          attachSensorCallbacks(bles[i], i);
+        }
+
+        guardCoreToolkitBluetooth({
+          coreIds: [0, 1],
+          messageElement: "#ble-support-message",
+        });
+      }
+
+      function attachSensorCallbacks(ble, id) {
+        ble.onConnect = function () {
+          sensors[id].connected = true;
+          sensors[id].status = "connected";
+          if (id === 0 && gameState === "ready") {
+            gameState = "playing";
+            messageText = "";
+          }
+          updateStatusText();
+        };
+
+        ble.onDisconnect = function () {
+          sensors[id].connected = false;
+          sensors[id].status = "disconnected";
+          updateStatusText();
+        };
+
+        ble.onReconnectAttempt = function (info) {
+          sensors[id].status = "reconnecting " + info.attempt;
+          updateStatusText();
+        };
+
+        ble.onReconnectSuccess = function () {
+          sensors[id].connected = true;
+          sensors[id].status = "reconnected";
+          updateStatusText();
+        };
+
+        ble.onReconnectFailed = function () {
+          sensors[id].connected = false;
+          sensors[id].status = "connect again";
+          updateStatusText();
+        };
+
+        ble.gotQuat = function (quat) {
+          const normalizedQuat = normalizeQuaternion(quat);
+          const euler = quaternionToEuler(normalizedQuat);
+          sensors[id].euler = euler;
+          pushChartSample(id, "euler", {
+            x: euler.pitch,
+            y: euler.roll,
+            z: euler.yaw,
+          });
+        };
+
+        ble.gotConvertedAcc = function (acc) {
+          sensors[id].acc = acc;
+          pushChartSample(id, "acc", acc);
+          updateStatusText();
+        };
+
+        ble.gotConvertedGyro = function (gyro) {
+          sensors[id].gyro = gyro;
+          pushChartSample(id, "gyro", gyro);
+        };
+
+        ble.gotStepsNumber = function (stepsNumber) {
+          sensors[id].steps = stepsNumber.value;
+          updateStatusText();
+        };
+
+        ble.gotGait = function (gait) {
+          sensors[id].gait = gait;
+        };
+
+        ble.gotStride = function (stride) {
+          sensors[id].stride = stride;
+        };
+
+        ble.gotFootAngle = function (footAngle) {
+          sensors[id].footAngle = footAngle.value;
+        };
+
+        ble.gotPronation = function (pronation) {
+          sensors[id].pronation = pronation;
+        };
+
+        ble.gotLandingImpact = function (landingImpact) {
+          sensors[id].landingImpact = landingImpact.value;
+        };
+      }
+
+      function updateStatusText() {
+        for (let i = 0; i < 2; i++) {
+          setText("status" + i, sensors[i].status);
+          setText("steps" + i, sensors[i].steps);
+          setText("acc" + i, formatVec3(sensors[i].acc));
+        }
+      }
+
+      function setText(id, value) {
+        const element = document.querySelector("#" + id);
+        if (element) element.textContent = value;
+      }
+
+      function formatVec3(vector) {
+        return fixed(vector.x) + " / " + fixed(vector.y) + " / " + fixed(vector.z);
+      }
+
+      function fixed(value) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return "0.00";
+        return number.toFixed(2);
+      }
+
+      function normalizeQuaternion(quat) {
+        const norm = Math.sqrt(
+          quat.w * quat.w +
+          quat.x * quat.x +
+          quat.y * quat.y +
+          quat.z * quat.z
+        );
+
+        if (!Number.isFinite(norm) || norm < 0.000001) {
+          return { w: 1, x: 0, y: 0, z: 0 };
+        }
+
+        return {
+          w: quat.w / norm,
+          x: quat.x / norm,
+          y: quat.y / norm,
+          z: quat.z / norm,
+        };
+      }
+
+      function quaternionToEuler(quat) {
+        const q = new Quaternion(quat.w, quat.x, quat.y, quat.z);
+        return q.toEuler();
+      }
+
+      // ============================================================
+      // SAFE FOUNDATION AREA: Chart.js raw sensor graph
+      // Bottom graphs for watching raw sensor changes while building the game.
+      // ============================================================
+      const charts = [
+        { acc: null, gyro: null, euler: null },
+        { acc: null, gyro: null, euler: null },
+      ];
+      let chartSampleCount = 0;
+      let lastChartUpdateMs = 0;
+
+      function setupCharts() {
+        charts[0].acc = makeChart("chartAcc0", ["acc.x", "acc.y", "acc.z"], -2, 2);
+        charts[0].gyro = makeChart("chartGyro0", ["gyro.x", "gyro.y", "gyro.z"], -250, 250);
+        charts[0].euler = makeChart("chartEuler0", ["pitch", "roll", "yaw"], -3.2, 3.2);
+        charts[1].acc = makeChart("chartAcc1", ["acc.x", "acc.y", "acc.z"], -2, 2);
+        charts[1].gyro = makeChart("chartGyro1", ["gyro.x", "gyro.y", "gyro.z"], -250, 250);
+        charts[1].euler = makeChart("chartEuler1", ["pitch", "roll", "yaw"], -3.2, 3.2);
+      }
+
+      function makeChart(canvasId, labels, suggestedMin, suggestedMax) {
+        return new Chart(document.getElementById(canvasId), {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              { label: labels[0], data: [], borderColor: "#d8585c", pointRadius: 0, borderWidth: 1 },
+              { label: labels[1], data: [], borderColor: "#2f9e44", pointRadius: 0, borderWidth: 1 },
+              { label: labels[2], data: [], borderColor: "#2f6fd6", pointRadius: 0, borderWidth: 1 },
+            ],
+          },
+          options: {
+            animation: false,
+            responsive: true,
+            scales: {
+              x: { display: false },
+              y: { suggestedMin: suggestedMin, suggestedMax: suggestedMax },
+            },
+            plugins: {
+              legend: { display: true, labels: { boxWidth: 12 } },
+            },
+          },
+        });
+      }
+
+      function pushChartSample(coreId, kind, vector) {
+        const chart = charts[coreId][kind];
+        if (!chart) return;
+
+        chartSampleCount++;
+        chart.data.labels.push(chartSampleCount);
+        chart.data.datasets[0].data.push(vector.x);
+        chart.data.datasets[1].data.push(vector.y);
+        chart.data.datasets[2].data.push(vector.z);
+
+        while (chart.data.labels.length > 80) {
+          chart.data.labels.shift();
+          chart.data.datasets.forEach(function (dataset) {
+            dataset.data.shift();
+          });
+        }
+      }
+
+      function updateChartsIfNeeded() {
+        if (millis() - lastChartUpdateMs < 120) return;
+        lastChartUpdateMs = millis();
+
+        for (let coreId = 0; coreId < 2; coreId++) {
+          if (charts[coreId].acc) charts[coreId].acc.update("none");
+          if (charts[coreId].gyro) charts[coreId].gyro.update("none");
+          if (charts[coreId].euler) charts[coreId].euler.update("none");
+        }
+      }
+    </script>
+  </body>
+</html>

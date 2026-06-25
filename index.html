@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORPHE CORE でつくる 足の動きを活用したアプリ企画 × バイブコーディング</title>
+<style>
+  :root{
+    --bg:#0e1726;          /* deep night-blue — ORPHE's motion/tech world */
+    --panel:#152033;
+    --ink:#eef3fb;
+    --muted:#9fb0cc;
+    --line:#26344d;
+    --accent:#5ad1c9;      /* ORPHE teal */
+    --accent2:#ff7a59;     /* warm coral for "do/try" */
+    --warn-bg:#3a1f23;
+    --warn-bd:#8a4a4f;
+    --tip-bg:#1d2c3a;
+    --tip-bd:#3a6f8a;
+    --code-bg:#0a1120;
+    --radius:14px;
+    --maxw:980px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",system-ui,sans-serif;
+    line-height:1.85; font-size:16px; letter-spacing:.01em;
+  }
+  a{color:var(--accent); text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* top bar */
+  .topbar{
+    position:sticky; top:0; z-index:50; background:rgba(14,23,38,.92);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+    display:flex; gap:10px; align-items:center; justify-content:space-between;
+    padding:10px 18px; flex-wrap:wrap;
+  }
+  .topbar .lang{font-size:13px; color:var(--muted)}
+  .topbar .lang a{margin:0 5px; color:var(--muted)}
+  .btns{display:flex; gap:8px; flex-wrap:wrap}
+  button.util{
+    background:transparent; color:var(--ink); border:1px solid var(--line);
+    padding:7px 13px; border-radius:999px; font-size:13px; cursor:pointer;
+    font-family:inherit;
+  }
+  button.util:hover{border-color:var(--accent); color:var(--accent)}
+
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px}
+
+  /* hero */
+  header.hero{padding:54px 0 30px; border-bottom:1px solid var(--line)}
+  .eyebrow{
+    font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--accent); font-weight:700; margin-bottom:14px;
+  }
+  h1.title{
+    font-size:clamp(28px,5vw,46px); line-height:1.25; margin:0 0 18px;
+    font-weight:800;
+  }
+  h1.title small{display:block; font-size:.5em; font-weight:600; color:var(--muted); margin-top:10px; letter-spacing:.02em}
+  .lede{color:var(--muted); font-size:17px; max-width:62ch}
+
+  /* nav chips */
+  nav.blocks{display:flex; gap:10px; flex-wrap:wrap; margin:28px 0 6px}
+  nav.blocks a{
+    display:block; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:12px 16px; min-width:200px; flex:1 1 200px;
+    color:var(--ink);
+  }
+  nav.blocks a:hover{border-color:var(--accent); text-decoration:none}
+  nav.blocks .n{font-size:12px; color:var(--accent); font-weight:700; letter-spacing:.1em}
+  nav.blocks .t{font-weight:700; margin-top:2px}
+  nav.blocks .s{font-size:12.5px; color:var(--muted); margin-top:3px}
+
+  /* prep banner */
+  .prep{
+    margin:30px 0 10px; background:linear-gradient(180deg,#1b2940,#16213400);
+    border:1px solid var(--line); border-left:4px solid var(--accent2);
+    border-radius:var(--radius); padding:20px 22px;
+  }
+  .prep h3{margin:0 0 8px; font-size:18px}
+  .prep .tag{color:var(--accent2); font-weight:800}
+
+  /* block sections */
+  section.block{padding:46px 0 8px; border-top:1px solid var(--line); margin-top:30px}
+  .blocklabel{
+    display:inline-flex; align-items:baseline; gap:12px; margin-bottom:8px;
+  }
+  .blocklabel .num{
+    font-size:13px; font-weight:800; letter-spacing:.12em; color:#0e1726;
+    background:var(--accent); border-radius:7px; padding:4px 10px;
+  }
+  .blocklabel .sub{color:var(--muted); font-size:13.5px}
+  h2.bh{font-size:clamp(22px,3.5vw,30px); margin:6px 0 4px; font-weight:800}
+  .blockdesc{color:var(--muted); max-width:64ch; margin-bottom:8px}
+
+  /* cards */
+  .card{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--radius); padding:22px 24px; margin:20px 0;
+  }
+  .card h3{
+    margin:0 0 12px; font-size:18px; display:flex; align-items:center; gap:10px;
+  }
+  .chip{
+    font-size:11px; font-weight:800; letter-spacing:.1em; color:var(--accent);
+    border:1px solid var(--accent); border-radius:6px; padding:2px 8px;
+    text-transform:uppercase;
+  }
+  .chip.do{color:var(--accent2); border-color:var(--accent2)}
+
+  ol.steps{margin:6px 0; padding-left:1.3em}
+  ol.steps li{margin:7px 0}
+  ul.plain{margin:6px 0; padding-left:1.25em}
+  ul.plain li{margin:6px 0}
+
+  code.inline{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:6px;
+    padding:2px 7px; font-family:"SFMono-Regular",Consolas,Menlo,monospace;
+    font-size:13.5px; color:#bfe9e4; word-break:break-all;
+  }
+
+  /* code block */
+  .codewrap{margin:16px 0}
+  .codehead{
+    display:flex; justify-content:space-between; align-items:center;
+    background:#0c1424; border:1px solid var(--line); border-bottom:none;
+    border-radius:10px 10px 0 0; padding:8px 14px; font-size:12.5px; color:var(--muted);
+  }
+  .codehead .fn{color:#bfe9e4; font-family:Consolas,monospace}
+  .copybtn{
+    background:var(--accent); color:#0e1726; border:none; border-radius:7px;
+    padding:5px 12px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;
+  }
+  .copybtn:hover{filter:brightness(1.08)}
+  pre{
+    margin:0; background:var(--code-bg); border:1px solid var(--line);
+    border-radius:0 0 10px 10px; padding:16px; overflow-x:auto;
+    font-family:Consolas,Menlo,monospace; font-size:13.5px; line-height:1.7; color:#dfe9f6;
+    white-space:pre-wrap; word-break:break-word;
+  }
+  /* prompt-style code (Japanese instructions to Copilot) */
+  pre.prompt{color:#e9f1d6; border-left:3px solid var(--accent2)}
+
+  /* callouts */
+  .note{border-radius:12px; padding:16px 18px; margin:16px 0; border:1px solid}
+  .note .h{font-weight:800; margin-bottom:6px; display:flex; align-items:center; gap:8px}
+  .note.warn{background:var(--warn-bg); border-color:var(--warn-bd)}
+  .note.warn .h{color:#ff9b8a}
+  .note.tip{background:var(--tip-bg); border-color:var(--tip-bd)}
+  .note.tip .h{color:#7fd6f0}
+  .note ul{margin:6px 0; padding-left:1.2em}
+  .note li{margin:5px 0}
+
+  /* role table */
+  .roles{width:100%; border-collapse:collapse; margin:14px 0; font-size:14.5px}
+  .roles th,.roles td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top}
+  .roles th{background:#1b2840; color:var(--accent); width:160px; white-space:nowrap}
+
+  /* chat bubble example */
+  .chat{display:flex; flex-direction:column; gap:8px; margin:12px 0}
+  .chat .who{font-size:12px; color:var(--muted); letter-spacing:.06em}
+  .bubble{
+    background:#17273e; border:1px solid var(--line); border-radius:12px;
+    padding:12px 16px; max-width:86%;
+  }
+  .bubble.me{align-self:flex-end; background:#1f3142; border-color:#34506a}
+
+  .makecodebtn,.linkbtn{
+    display:inline-block; background:#17273e; border:1px solid var(--line);
+    border-radius:10px; padding:9px 15px; margin:4px 8px 4px 0; color:var(--ink);
+    font-size:14px; font-weight:600;
+  }
+  .makecodebtn:hover,.linkbtn:hover{border-color:var(--accent); text-decoration:none}
+  .linkbtn .ic{color:var(--accent); margin-right:6px}
+
+  /* inspiration gallery */
+  .gallery{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin:14px 0}
+  .gallery a{
+    display:block; background:#16243a; border:1px solid var(--line); border-radius:12px;
+    padding:14px 14px 13px; color:var(--ink); transition:border-color .15s,transform .15s;
+  }
+  .gallery a:hover{border-color:var(--accent); transform:translateY(-2px); text-decoration:none}
+  .gallery .emoji{font-size:24px; line-height:1; display:block; margin-bottom:8px}
+  .gallery .gt{font-weight:700; font-size:14.5px}
+  .gallery .gs{font-size:12px; color:var(--muted); margin-top:3px; line-height:1.5}
+  .gallery .gtag{font-size:10.5px; color:var(--accent); letter-spacing:.08em; text-transform:uppercase; font-weight:700; margin-top:7px; display:block}
+
+  footer{
+    margin-top:60px; border-top:1px solid var(--line); padding:30px 0 60px;
+    color:var(--muted); font-size:13.5px;
+  }
+
+  /* print */
+  @media print{
+    .topbar,nav.blocks,.copybtn{display:none}
+    body{background:#fff; color:#111}
+    .card,.note,.prep,pre,.codehead{border-color:#bbb; background:#fff !important; color:#111}
+    pre{color:#111}
+    a{color:#0b5} 
+    section.block{break-inside:avoid}
+  }
+  @media (max-width:560px){
+    nav.blocks a{min-width:100%}
+    .roles th{width:auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="lang">Language ▾
+    <a href="#" onclick="return false">日本語</a>·
+    <a href="https://translate.google.com/translate?sl=ja&tl=en&u=" onclick="this.href='https://translate.google.com/translate?sl=ja&tl=en&u='+encodeURIComponent(location.href);">English</a>·
+    <a href="https://translate.google.com/translate?sl=ja&tl=zh-CN&u=" onclick="this.href='https://translate.google.com/translate?sl=ja&tl=zh-CN&u='+encodeURIComponent(location.href);">简体</a>·
+    <a href="https://translate.google.com/translate?sl=ja&tl=ko&u=" onclick="this.href='https://translate.google.com/translate?sl=ja&tl=ko&u='+encodeURIComponent(location.href);">한국어</a>
+  </span>
+  <div class="btns">
+    <button class="util" onclick="document.querySelectorAll('details').forEach(d=>d.open=true)">トラブル対応を全部開く</button>
+    <button class="util" onclick="window.print()">印刷 / PDF</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Product Design ／ Graduate Workshop</div>
+    <h1 class="title">ORPHE CORE でつくる<br>足の動きを活用したアプリ企画 × バイブコーディング
+      <small>バイブコーディング（自然言語でアプリを作る）。「こうしたい」をCopilotに伝えて、足で動くWebアプリを生成AIと一緒に作ります。5人1組・90分。</small>
+    </h1>
+    <p class="lede">足に着けるセンサー ORPHE CORE を入力に、p5.js でゲーム・ビジュアル・音・計測ツールを作ります。コードは <b>Teams に入っている Copilot</b> との対話で書くので、プログラミングが初めてでも大丈夫。上から順に進めれば、90分で全員が「動いた！」までたどり着けます。</p>
+
+    <nav class="blocks">
+      <a href="#copilot-basics"><span class="n">BASIC</span><div class="t">Copilotの話しかけ方</div><div class="s">vibe coding の基本</div></a>
+      <a href="#b1"><span class="n">BLOCK 1</span><div class="t">つなぐ</div><div class="s">スターターを貼って接続</div></a>
+      <a href="#b2"><span class="n">BLOCK 2</span><div class="t">観察する</div><div class="s">内蔵グラフで値を見る</div></a>
+      <a href="#b3"><span class="n">BLOCK 3</span><div class="t">改造する</div><div class="s">EDIT AREAをCopilotで</div></a>
+      <a href="#inspo"><span class="n">EXAMPLES</span><div class="t">こんなものも作れる</div><div class="s">公式作例 / 企画ブレスト</div></a>
+      <a href="#appendix"><span class="n">APPENDIX</span><div class="t">関数名 早見表</div><div class="s">取れるデータ一覧</div></a>
+    </nav>
+
+    <div class="prep">
+      <h3>⚡ <span class="tag">当日までにやってくること（所要15分・重要）</span></h3>
+      <p style="margin:2px 0 10px; color:var(--muted)">当日のWS時間は<b>実質で90分しかありません！</b>下の3つを<b>事前に各自のPCで</b>済ませてくると、本番は「作る」だけに集中できます。</p>
+      <ul class="plain">
+        <li><b>① Google Chrome（または Edge）を入れてくる。</b>Safari・Firefox では ORPHE につながりません。ふだん別のブラウザを使っている人も、当日は Chrome で開いてください。</li>
+        <li><b>② p5.js Web Editor のアカウントを作る。</b><a href="https://editor.p5js.org/signup" target="_blank" rel="noopener">editor.p5js.org/signup</a> から登録（無料）。作品の保存・共有に使います。</li>
+        <li><b>③ Teams の Copilot を一度開いて、何か質問してみる。</b>下の「Copilotってなに？」を読んで、実際に1往復だけ会話しておくと当日スムーズです。</li>
+      </ul>
+    </div>
+
+    <!-- What is Copilot -->
+    <div class="card" id="copilot" style="margin-top:22px">
+      <h3><span class="chip">事前共有</span>Copilot ってなに？　— 今回の主役です</h3>
+      <p>このWSでは、プログラムを <b>自分で1行ずつ書きません</b>。代わりに <b>Copilot（AIアシスタント）に日本語で「こうしたい」と伝えて、コードを書いてもらう</b>やり方（＝バイブcoding）で進めます。Copilot は <b>みなさんの Teams の中にすでに入っています</b>。新しくインストールするものはありません。</p>
+
+      <p style="margin-top:14px"><b>Copilot にできること（このWordで使うこと）</b></p>
+      <ul class="plain">
+        <li><b>コードを書いてもらう。</b>「足を振ったら音が鳴るようにして」と頼むと、プログラムを書いて返してくれます。</li>
+        <li><b>エラーを直してもらう。</b>赤いエラー文を貼って「直して」と言えば、原因と直し方を教えてくれます。</li>
+        <li><b>コードの意味を説明してもらう。</b>「このコードが何をしているか教えて」で、日本語で解説してくれます。</li>
+        <li><b>アイデア出しの相手になってもらう。</b>「こんなセンサーで作れる作品を3つ提案して」のように壁打ちできます。</li>
+      </ul>
+
+      <p style="margin-top:14px"><b>Teams での開き方</b></p>
+      <ol class="steps">
+        <li>Teams を開き、左側のメニュー（または上部の検索バー横）にある <b>Copilot</b> を選ぶ。</li>
+        <li>下の入力欄に、ふつうにチャットするように日本語で書いて送る。</li>
+        <li>返ってきた文章やコードは、右上のコピーボタンで丸ごとコピーできる。</li>
+      </ol>
+
+      <div class="note tip">
+        <div class="h">💡 まず1回ためしてみよう（事前課題）</div>
+        Teams の Copilot に、こう送ってみてください ——「<b>p5.js って何ができるツール？ プログラミング初心者にもわかるように3行で教えて。</b>」。返事が来れば準備OK。これが当日やる「話しかけ方」の練習になります。
+      </div>
+
+      <div class="note warn">
+        <div class="h">⚠ Copilot を使うときの心がまえ</div>
+        AIは便利ですが、<b>間違ったコードや動かないコードを返すこともあります</b>。鵜呑みにせず「動かなかったらまた頼む」を繰り返すのが普通です。そして <b>「なぜそう作ったか」を説明するのは自分自身</b>。出てきたコードは、Copilot に意味を聞いて自分でも理解しておきましょう。</div>
+    </div>
+
+    <!-- 90-min timetable -->
+    <div class="card">
+      <h3><span class="chip">90分</span>当日の流れ（タイムテーブル）</h3>
+      <table class="roles">
+        <tr><th>0:00–0:10</th><td><b>導入・グループ分け。</b>Copilotと ORPHE CORE の説明、5人の役割決め。</td></tr>
+        <tr><th>0:10–0:25</th><td><b>BLOCK 1 つなぐ。</b>スターターHTMLを貼って Run、CORE に接続。サンプルゲームで遊んで全員「つながった！」を体験。</td></tr>
+        <tr><th>0:25–0:40</th><td><b>BLOCK 2 観察する。</b>内蔵グラフを見ながら足を動かし、どの動きがどの値に効くかを確認。</td></tr>
+        <tr><th>0:40–0:50</th><td><b>企画ブレスト（EXAMPLES）。</b>作例に触れ、Copilotと相談して作るものを1つに決める。</td></tr>
+        <tr><th>0:50–1:15</th><td><b>BLOCK 3 改造する（制作）。</b>EDIT AREAをCopilotで1つずつ改造して、企画を形に。</td></tr>
+        <tr><th>1:15–1:30</th><td><b>発表・ふりかえり。</b>各グループ1〜2分でデモ、Copilotの使い方を共有。</td></tr>
+      </table>
+      <p style="color:var(--muted)">※ つまずいたBLOCKがあっても先に進んでOK。「一番簡単な1つ」に絞るのが、90分で完成させるコツです。</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO: roles ============ -->
+  <section class="block" id="intro" style="border-top:none">
+    <div class="blocklabel"><span class="num" style="background:var(--accent2);color:#fff">START</span><span class="sub">5分</span></div>
+    <h2 class="bh">5人での役割分担</h2>
+    <p class="blockdesc">ORPHE CORE は1グループ1台ですが、Copilotと話す・コードを貼る・実行することは全員でできます。下の役割を <b>15〜20分ごとに時計回りで交代</b> し、全員が一度はドライバーとプレイヤーを体験してください。</p>
+    <table class="roles">
+      <tr><th>ドライバー</th><td>Copilotに指示を打ち込み、出てきたコードを貼って ▶ Run する人</td></tr>
+      <tr><th>ナビゲーター</th><td>「次はこう頼もう」と、指示文を一緒に考える人</td></tr>
+      <tr><th>プレイヤー</th><td>ORPHE CORE を足に着けて、実際に動く人</td></tr>
+      <tr><th>オブザーバー</th><td>動きと画面のズレ・気づきをメモする人</td></tr>
+      <tr><th>タイムキーパー</th><td>時間管理＋スクショ・発表メモ係</td></tr>
+    </table>
+
+    <div class="note warn">
+      <div class="h">⚠ つながらない時はまずこの4つ</div>
+      <ul>
+        <li><b>① Chrome / Edge</b> で開いているか（Safari・Firefoxは不可）。</li>
+        <li><b>② p5.js Web Editor は「▶ Run」した後、プレビュー画面内のボタンから接続</b>。それでもダイアログが出なければ、画面を新しいタブで開き直す。</li>
+        <li><b>③ 接続は必ず画面のボタンを自分でクリックして開始</b>（自動接続はブラウザの仕様でできません）。</li>
+        <li><b>④ ORPHE本体の電源がON</b>か、他のPCと接続済みになっていないか確認。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ COPILOT BASICS ============ -->
+  <section class="block" id="copilot-basics">
+    <div class="blocklabel"><span class="num">BASIC</span><span class="sub">vibe coding の基本 ／ Copilotの話しかけ方</span></div>
+    <h2 class="bh">Copilotへの「話しかけ方」</h2>
+    <p class="blockdesc">この先のBLOCK1〜3には、各作業でCopilotに送る<b>お手本プロンプト</b>がそれぞれ載っています。その前に、共通のコツだけ押さえておきましょう。バイブコーディングは、技術ではなく<b>「何を作りたいか」を言葉にする</b>のが本体です。</p>
+
+    <div class="card">
+      <h3><span class="chip">POINT</span>うまく頼む4つのコツ</h3>
+      <ol class="steps">
+        <li><b>作りたい体験を先に言う。</b>「足踏みすると画面の花が増える」のように、技術ではなく体験で。</li>
+        <li><b>土台のコードを一緒に貼る。</b>「このコードに追加して」と渡すと的外れが激減。</li>
+        <li><b>一度に1つだけ頼む。</b>色も音もではなく、まず色、動いたら次に音。</li>
+        <li><b>エラーもそのまま伝える。</b>赤い文字をコピペして「このエラーを直して」。</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip">EXAMPLE</span>話しかけ方の例</h3>
+      <p>改造を頼むときは、<b>定型ヘッダー文＋いま動いているHTML全文</b>を貼ってから、やりたいことを伝えます。</p>
+      <div class="chat">
+        <span class="who">あなた → Copilot</span>
+        <div class="bubble me">（前提条件＋スターターHTMLを貼った後）<br>このスターターの COPILOT EDIT AREA だけを変えて、パドルを「向き」ではなく「踏み込みの強さ（acc.y）」で動かしたいです。SAFE FOUNDATION AREA は触らないで、HTML全文で返してください。</div>
+      </div>
+    </div>
+
+    <details class="card">
+      <summary style="cursor:pointer; font-weight:700; font-size:17px;">▸ 困ったときのプロンプト集（クリックで開く）</summary>
+      <div style="margin-top:14px">
+        <p><b>● 接続ボタンを押しても何も起きない</b></p>
+        <pre class="prompt">接続ダイアログが出ません。Chromeで、p5のプレビューを別タブで開いています。
+原因の候補を3つ、初心者向けに教えてください。
+（SAFE FOUNDATION AREA は変更しないでください）</pre>
+        <p style="margin-top:14px"><b>● 赤いエラーが出た</b></p>
+        <pre class="prompt">（エラー文をそのまま貼って）
+このエラーが出ました。原因と直し方を初心者向けに1つずつ教えて。
+直したHTML全文も出してください。</pre>
+        <p style="margin-top:14px"><b>● 改造したら動かなくなった／戻したい</b></p>
+        <pre class="prompt">さっきの改造で動かなくなりました。
+直前に □□ を変えました。元の動く状態に戻したうえで、
+今度は SAFE FOUNDATION AREA を触らずに、もう一度 △△ だけ変えてください。
+HTML全文で出してください。</pre>
+        <p style="margin-top:14px"><b>● 操作の反応が鈍い／敏感すぎる</b></p>
+        <pre class="prompt">操作の反応が鈍い（または敏感すぎる）ので、
+COPILOT EDIT AREA 2 の感度だけ調整してください。
+SAFE FOUNDATION AREA は触らないでください。</pre>
+        <p style="margin-top:14px"><b>● 値がときどき飛ぶ・カクつく</b></p>
+        <pre class="prompt">動きがときどきカクつきます。
+ORPHE本体を体に近づける・充電する、で改善することがあります。
+それでも気になる場合、COPILOT EDIT AREA の中だけで
+値を少しなめらかにする処理を入れてください。</pre>
+        <p style="margin-top:14px"><b>● 接続が切れる</b></p>
+        <pre class="prompt">途中で接続が切れます。スターターには自動再接続があるはずなので、
+少し待つか、もう一度接続ボタンを押してみてください。
+（コードは変えず、まず操作で解決できるか教えて）</pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ BLOCK 1 ============ -->
+  <section class="block" id="b1">
+    <div class="blocklabel"><span class="num">BLOCK 1</span><span class="sub">つなぐ ／ スターターを貼って接続 + 役割分担</span></div>
+    <h2 class="bh">まずは「つながって遊べた！」を全員で</h2>
+    <p class="blockdesc">出発点は、菊川さん作のスターターHTMLを貼ること。接続UI・グラフ・サンプルゲームが最初から動くので、つないで遊ぶところまで一気に行けます。ここが通れば、あとは改造するだけです。</p>
+
+    <div class="card">
+      <h3><span class="chip">ORPHE</span>ORPHE CORE とは</h3>
+      <p>足に着ける小さなセンサーです。<b>加速度・角速度・向き（オイラー角）・歩数・踏み込み</b>などをリアルタイムで取れます。これを p5.js プログラムの「入力」に使います。Web Bluetooth でブラウザから直接つなぎます。</p>
+      <a class="linkbtn" href="https://orphe-oss.github.io/ORPHE-CORE.js/" target="_blank" rel="noopener"><span class="ic">✦</span>ORPHE-CORE.js 公式（サンプル多数）</a>
+      <a class="linkbtn" href="https://orphe-oss.github.io/ORPHE-CORE.js/docs/getting-started-p5.html" target="_blank" rel="noopener"><span class="ic">▶</span>p5.js で始める Quick Start</a>
+      <a class="linkbtn" href="https://orphe-oss.github.io/ORPHE-CORE.js/tutorial/basic.html" target="_blank" rel="noopener"><span class="ic">📖</span>基礎チュートリアル（もっと知りたい人向け）</a>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip">仕組み</span>接続まわりは「全部おまかせ」でOK</h3>
+      <p>このスターターは <b>CoreToolkit.js</b> という仕組みを使っていて、<b>接続・再接続・センサー値の受信を全部自動でやってくれます。</b>だから学生は「どうやって繋ぐか」を書く必要がありません。覚えることはこれだけです。</p>
+      <ul class="plain">
+        <li>画面の<b>接続ボタンはスターターが最初から表示</b>します（自分で作らない）。</li>
+        <li>センサーの値は <code class="inline">sensors[0]</code>（CORE 01）から読みます。例：<code class="inline">sensors[0].euler.pitch</code>（向き）、<code class="inline">sensors[0].acc.x</code>（加速度）、<code class="inline">sensors[0].steps</code>（歩数）。</li>
+        <li>新しく <code class="inline">new Orphe()</code> を作ってはいけません（接続が二重になって壊れます）。</li>
+      </ul>
+      <div class="note tip">
+        <div class="h">💡 つまり学生がやることは</div>
+        「<b>sensors[0] に入っている値を、ゲームの動きにどう結びつけるか</b>」を考えるだけ。そこをCopilotに頼んで改造していきます。読めるデータの一覧は<a href="#appendix">ページ下部の早見表</a>に。
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip">最初に1回</span>スターターHTMLを index.html に丸ごと貼る（最重要）</h3>
+      <p>このWSでは、ORPHE開発者の菊川さんが用意した<b>スターターHTML</b>を出発点にします。接続UI・センサーのグラフ・サンプルゲーム（モーションピンポン）が<b>最初から全部入っていて、貼るだけで動きます</b>。ゼロからコードを書く必要はありません。</p>
+      <ol class="steps">
+        <li>下のボタンから <code class="inline">orphe_starter.html</code> をダウンロードして開く（中身は触らなくてOK）。</li>
+        <li><a href="https://editor.p5js.org" target="_blank" rel="noopener">p5.js Web Editor</a> を開き、左の <code class="inline">index.html</code> を選ぶ。</li>
+        <li>index.html の中身を<b>全部消して、スターターHTMLを丸ごと貼り付け</b>。</li>
+        <li><b>▶ Run</b> すれば、接続ボタンとゲーム画面が出ます。これがスタート地点です。</li>
+      </ol>
+      <a class="linkbtn" href="orphe_starter.html" download><span class="ic">⬇</span>orphe_starter.html をダウンロード</a>
+      <a class="linkbtn" href="orphe_starter.html" target="_blank" rel="noopener"><span class="ic">◷</span>中身を別タブで見る</a>
+      <div class="note tip">
+        <div class="h">💡 これは「全部入り1ファイル」です</div>
+        p5.js Web Editor は通常 index.html / sketch.js / style.css の3ファイル構成ですが、このスターターは <b>index.html 1枚に全部</b>書かれています。だから <code class="inline">sketch.js</code> は使わず、<b>編集はすべて index.html の中で</b>行います。
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip">仕組み</span>スターターの「3つの編集エリア」だけ触る</h3>
+      <p>スターターHTMLの中身は、Copilotが安全に改造できるよう<b>4つのゾーン</b>に分かれています。学生（とCopilot）が触るのは <b>EDIT AREA だけ</b>。接続まわり（SAFE FOUNDATION AREA）は触りません。</p>
+      <table class="roles">
+        <tr><th style="width:210px">ゾーン</th><th>役割／ここで何を変える？</th></tr>
+        <tr><th>COPILOT EDIT AREA 1</th><td>ゲーム設定。速度・大きさ・色・勝利点・AIの強さなど（数字を変えるだけ）。</td></tr>
+        <tr><th>COPILOT EDIT AREA 2</th><td>センサー→操作の対応づけ（<code class="inline">sensorToPaddleY()</code>）。「向き」で動かすか「歩数」で動かすか等。</td></tr>
+        <tr><th>COPILOT EDIT AREA 3</th><td>ゲーム本体。ボール・パドル・描画・ルール。別のゲームに作り替えるならここ。</td></tr>
+        <tr><th>SAFE FOUNDATION AREA</th><td><b>触らない</b>。接続・センサー受信・グラフ。壊すと繋がらなくなります。</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip">定型ヘッダー文</span>すべてのお願いの先頭に貼る（全STEP共通）</h3>
+      <p>このスターターを安全に改造させるための前提文です。<b>Copilotに改造を頼むときは、まずこれを先頭に貼ってください。</b>「接続を壊さない・編集エリアだけ触る・全文で返す」を守らせます。</p>
+      <div class="codewrap">
+        <div class="codehead"><span class="fn">header_prompt.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
+        <pre class="prompt"># 前提条件（必ず守ってください）
+- これは ORPHE CORE + CoreToolkit.js のスターターHTML（1ファイル）です。
+  これから渡すHTML全体をベースに改造してください。
+- 編集してよいのは COPILOT EDIT AREA 1・2・3 だけです。
+  SAFE FOUNDATION AREA（接続・センサー受信・グラフ・クォータニオン処理）は
+  絶対に変更・削除しないでください。
+- 新しく new Orphe() を作らないでください。接続は CoreToolkit が
+  bles[0] / bles[1] で既に用意しています。
+- toolkit0, toolkit1, gameCanvas, chartAcc0 などのIDや、
+  setupCoreToolkit(), attachSensorCallbacks(), setupCharts(),
+  normalizeQuaternion() の名前は変えないでください。
+- センサー値は次から読めます（自分で取得処理を書かない）：
+  sensors[0] が CORE 01、sensors[1] が CORE 02。
+  sensors[id].euler.pitch / roll / yaw（向き）
+  sensors[id].acc.x / y / z（加速度）
+  sensors[id].gyro.x / y / z（角速度）
+  sensors[id].steps（歩数）
+  sensors[id].gait / stride / footAngle / pronation / landingImpact（歩行解析）
+- 回答は、改造後のHTMLを【全文】で出してください。
+  「（省略）」などを使わず、そのまま index.html に貼れる完成形で。
+- ブラウザは Chrome 想定（Web Bluetooth）。
+- コードは初心者が読めるよう、変更点に日本語コメントを付けてください。</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip">STEP 1</span>貼って、つないで、遊んでみる</h3>
+      <p>まずは改造せず、スターターをそのまま動かして接続を確認します。CORE 1台でも、もう片方は自動でAIが操作するのでゲームになります。</p>
+      <ol class="steps">
+        <li>上の手順でスターターHTMLを index.html に貼り、<b>▶ Run</b>。</li>
+        <li>画面上部の <b>「CORE 01」の接続ボタン</b>を押し、ORPHE CORE を選ぶ（Chromeで）。</li>
+        <li>ステータスが <code class="inline">connected</code> になったら、足（センサー）を動かすと左パドルが動きます。</li>
+        <li>右パドルはAIが担当。ラリーが続けば接続成功です。</li>
+      </ol>
+      <div class="note tip">
+        <div class="h">💡 接続ダイアログが出ない時</div>
+        Run後のプレビュー枠内でボタンが効かない場合は、ページを新しいタブで開き直してから接続してみてください。Web Bluetooth は「ユーザーがボタンを押した瞬間」しか機器選択を出せない仕様です。CORE未接続でも、<b>キーボードの↑↓キー</b>で左パドルを動かして動作確認できます。
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BLOCK 2 ============ -->
+  <section class="block" id="b2">
+    <div class="blocklabel"><span class="num">BLOCK 2</span><span class="sub">観察する ／ 内蔵グラフで値を見る</span></div>
+    <h2 class="bh">どの動きがどの値に効くかを見つける</h2>
+    <p class="blockdesc">数字を「見える化」すると、企画のアイデアが湧いてきます。足を動かしたとき、どの値がどう変わるかを観察しましょう。</p>
+
+    <div class="card">
+      <h3><span class="chip">STEP 2</span>グラフで「どの動きが効くか」を見つける</h3>
+      <p>スターター画面の下に、<b>加速度・角速度・向き（Euler）のリアルタイムグラフ</b>が最初から表示されています。コードを書かなくても、ここを見ながら足を動かせば「どの値がどう反応するか」がすぐ分かります。これが企画の発想源になります。</p>
+      <ol class="steps">
+        <li>CORE を足に着けて、<b>歩く・つま先を上げる・かかとで踏む・ジャンプ</b>を試す。</li>
+        <li>そのとき <b>どのグラフ（acc / gyro / euler）が大きく動くか</b>を観察する。</li>
+        <li>上のステータス欄の <code class="inline">steps</code>（歩数）や <code class="inline">acc</code> の数値も見る。</li>
+      </ol>
+      <div class="note tip">
+        <div class="h">💡 観察のポイント</div>
+        「強く踏むと acc が跳ねる」「つま先を上げると euler の pitch が変わる」など、<b>動き → 反応する値</b>の組をオブザーバーがメモしておくと、BLOCK3で「何を操作に使うか」が決めやすくなります。読めるデータの一覧は<a href="#appendix">ページ下部の早見表</a>に。
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BLOCK 3 ============ -->
+  <section class="block" id="b3">
+    <div class="blocklabel"><span class="num">BLOCK 3</span><span class="sub">動きを変える ／ ビジュアル・音・スコア</span></div>
+    <h2 class="bh">動きを「何か」に結びつける</h2>
+    <p class="blockdesc">値を、目に見える変化・音・スコアに変換します。ここがグループのアイデアを入れる場所。<b>1機能ずつ</b>足すのがコツです。</p>
+
+    <div class="card">
+      <h3><span class="chip do">STEP 3</span>操作を変えてみる（EDIT AREA 2）</h3>
+      <p>まずは小さな改造から。<b>「何で操作するか」</b>を変えます。今は「向き（pitch）」でパドルが動きますが、これを別のセンサー値に変えてみましょう。定型ヘッダー文＋スターターHTML全文を貼ったうえで、下を送ります。</p>
+      <div class="codewrap">
+        <div class="codehead"><span class="fn">step3.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
+        <pre class="prompt">（先頭に定型ヘッダー文＋スターターHTML全文を貼ったうえで）
+
+COPILOT EDIT AREA 2 の sensorToPaddleY() だけを変えて、
+パドルを「向き(pitch)」ではなく「加速度の上下(acc.y)」で
+動かすようにしてください。
+動きが急すぎる/鈍いときに調整できるよう、感度の数値も
+分かりやすくコメントしてください。
+SAFE FOUNDATION AREA は変更しないでください。</pre>
+      </div>
+      <div class="note tip">
+        <div class="h">💡 調整もCopilotに頼める</div>
+        「反応が鈍い／敏感すぎる」ときは、そのまま「感度を上げて／下げて」と頼めばOK。BLOCK2のグラフで見た“よく動く値”を操作に使うと、気持ちよく動きます。
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip do">STEP 4</span>自分たちのゲームに作り替える（EDIT AREA 1・3）</h3>
+      <p>いよいよ企画を形に。<b>見た目や難易度（EDIT AREA 1）</b>、<b>ゲームのルールそのもの（EDIT AREA 3）</b>を変えます。欲張らず、まず一番簡単な1つから。</p>
+      <div class="codewrap">
+        <div class="codehead"><span class="fn">step4.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
+        <pre class="prompt">（先頭に定型ヘッダー文＋いま動いているHTML全文を貼ったうえで）
+
+COPILOT EDIT AREA 1・2・3 だけを変えて、
+〇〇〇〇（作りたいゲームを一言で）にしてください。
+まず △△△△ の部分だけ変えて、他はできるだけ残してください。
+SAFE FOUNDATION AREA（接続・センサー・グラフ）は触らないでください。
+改造後のHTMLを全文で出してください。</pre>
+      </div>
+      <div class="note tip">
+        <div class="h">💡 作り替えの例</div>
+        「ボールを避けるゲームにして」「踏み込んだら主人公がジャンプするゲームにして」「スコアと制限時間を足して」など。<b>1回に1つ</b>の変更にすると、動かなくなっても戻しやすいです。
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INSPIRATION ============ -->
+  <section class="block" id="inspo">
+    <div class="blocklabel"><span class="num" style="background:var(--accent2);color:#fff">INSPIRATION</span><span class="sub">こんなものも作れる ／ 公式 Examples</span></div>
+    <h2 class="bh">バイブコーディングで、ここまで作れる</h2>
+    <p class="blockdesc">下は ORPHE 公式が公開している作例です。<b>どれも「足の動き」を入力にした、CORE 1台で動くWebアプリ</b>に絞ってあります（今回は1グループ1台なので）。実際に動くので、企画のヒントに触ってみてください。「こういうのを作りたい」と思ったら、その動きの仕組み（例：踏み込みで判定／向きで操作）をCopilotに伝えるのが第一歩です。</p>
+
+    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ ゲーム・スポーツ</h3>
+    <div class="gallery">
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-HURDLE/" target="_blank" rel="noopener"><span class="emoji">🏃</span><span class="gt">110m ハードル走</span><span class="gs">足の動きで走る陸上ゲーム</span><span class="gtag">Virtual Sports</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-UDON/" target="_blank" rel="noopener"><span class="emoji">🍜</span><span class="gt">うどんふみふみ</span><span class="gs">足踏みでうどんをこねる</span><span class="gtag">Game</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/MOVEYOURFEET/" target="_blank" rel="noopener"><span class="emoji">👟</span><span class="gt">足パタパタ</span><span class="gs">足を動かして遊ぶ運動ゲーム</span><span class="gtag">Exercise</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-DDR/" target="_blank" rel="noopener"><span class="emoji">💃</span><span class="gt">DDR</span><span class="gs">音楽×足の動きのリズムゲーム</span><span class="gtag">Rhythm</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-PINGPONG/" target="_blank" rel="noopener"><span class="emoji">🏓</span><span class="gt">ピンポン</span><span class="gs">1台ならAIと対戦できる（今回の土台）</span><span class="gtag">Game</span></a>
+    </div>
+
+    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ 音・ビジュアル表現</h3>
+    <div class="gallery">
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/drum_test/" target="_blank" rel="noopener"><span class="emoji">🥁</span><span class="gt">ジェスチャードラム</span><span class="gs">足の動きで音を鳴らす</span><span class="gtag">Sound</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GESTURE-DEMO/" target="_blank" rel="noopener"><span class="emoji">✨</span><span class="gt">ジェスチャー検出</span><span class="gs">つま先/かかと/踏み込みを判定</span><span class="gtag">Gesture</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/POSE/" target="_blank" rel="noopener"><span class="emoji">🕺</span><span class="gt">POSE</span><span class="gs">カメラの姿勢推定×足センサー</span><span class="gtag">Creative</span></a>
+      <a href="https://editor.p5js.org/tetsuakibaba/sketches/waUWo6ZZN" target="_blank" rel="noopener"><span class="emoji">📦</span><span class="gt">3DBOX</span><span class="gs">向きに連動して回る立方体</span><span class="gtag">p5.js</span></a>
+    </div>
+
+    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ 計測・可視化（気づきを得る）</h3>
+    <div class="gallery">
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/VISUALIZE/" target="_blank" rel="noopener"><span class="emoji">📈</span><span class="gt">VISUALIZE</span><span class="gs">センサー値をグラフで可視化</span><span class="gtag">Chart</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/FOOT%20ANGLE/" target="_blank" rel="noopener"><span class="emoji">📐</span><span class="gt">FOOT ANGLE</span><span class="gs">接地角・足の角度を可視化</span><span class="gtag">Gait</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/PRONATION/" target="_blank" rel="noopener"><span class="emoji">🦶</span><span class="gt">PRONATION</span><span class="gs">着地時の内/外の倒れを表示</span><span class="gtag">Gait</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/AIRWALKER/" target="_blank" rel="noopener"><span class="emoji">📊</span><span class="gt">AIR WALKER</span><span class="gs">歩数・活動量ダッシュボード</span><span class="gtag">Dashboard</span></a>
+    </div>
+
+    <a class="linkbtn" href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/" target="_blank" rel="noopener"><span class="ic">✦</span>すべての Examples を見る（公式ギャラリー）</a>
+
+    <div class="note tip">
+      <div class="h">💡 作例から企画につなげる頼み方</div>
+      気になった作例があったら、Copilotにこう伝えてみてください ——「<b>ORPHEの足センサーで、〇〇（例：踏み込むとドラムが鳴る）みたいなものを作りたい。まず一番簡単な形から手伝って。</b>」。完成品をそのままコピーするのではなく、<u>その作品の“核になる1つの動き”だけ</u>を真似るのが、90分で動かすコツです。
+    </div>
+
+    <div class="card">
+      <h3><span class="chip do">BRAINSTORM</span>企画を1つに決める（Copilotと相談）</h3>
+      <p>作るものに迷ったら、Copilotを壁打ち相手にできます。下を送ってアイデアを出させ、<b>そのなかから1つに絞って</b>BLOCK3の制作へ進みます。</p>
+      <div class="codewrap">
+        <div class="codehead"><span class="fn">brainstorm.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
+        <pre class="prompt">足に着けるセンサーで、加速度・向き・歩数・踏み込みが取れます。
+これを使った、90分で作れる簡単な作品アイデアを
+「ゲーム」「ビジュアル」「音」「測定・気づき」の4方向で
+3つずつ、各1行で出してください。実装が重いものは避けてください。</pre>
+      </div>
+      <p style="color:var(--muted)">出た案は必ず「いちばん簡単に試せる1つ」に絞ってから作り始めること。欲張ると90分で動きません。</p>
+    </div>
+  </section>
+
+  <!-- ============ APPENDIX ============ -->
+  <section class="block" id="appendix">
+    <div class="blocklabel"><span class="num" style="background:#555;color:#fff">APPENDIX</span><span class="sub">付録 ／ リファレンス</span></div>
+    <h2 class="bh">スターターで読めるデータ早見表</h2>
+    <p class="blockdesc">スターターでは、接続したセンサーの値が <code class="inline">sensors[0]</code>（CORE 01）にいつも入っています。<b>下の「読み方」をそのままCopilotに伝えると、ピンポイントで正しい改造が返ってきます。</b>「パドルを歩数で動かして → <code class="inline">sensors[0].steps</code> を使って」のように。</p>
+    <div class="card">
+      <table class="roles">
+        <tr><th style="width:210px">取りたいもの</th><th>コードでの読み方</th></tr>
+        <tr><td>向き（傾き pitch/roll/yaw）</td><td><code class="inline">sensors[0].euler.pitch</code> / <code class="inline">.roll</code> / <code class="inline">.yaw</code></td></tr>
+        <tr><td>加速度（振り・衝撃）</td><td><code class="inline">sensors[0].acc.x</code> / <code class="inline">.y</code> / <code class="inline">.z</code></td></tr>
+        <tr><td>角速度（回転の速さ）</td><td><code class="inline">sensors[0].gyro.x</code> / <code class="inline">.y</code> / <code class="inline">.z</code></td></tr>
+        <tr><td>歩数</td><td><code class="inline">sensors[0].steps</code></td></tr>
+        <tr><td>歩容（歩く/走るなど）</td><td><code class="inline">sensors[0].gait</code></td></tr>
+        <tr><td>ストライド（歩幅）</td><td><code class="inline">sensors[0].stride</code></td></tr>
+        <tr><td>足の角度（接地角）</td><td><code class="inline">sensors[0].footAngle</code></td></tr>
+        <tr><td>プロネーション（内/外への倒れ）</td><td><code class="inline">sensors[0].pronation</code></td></tr>
+        <tr><td>着地の衝撃</td><td><code class="inline">sensors[0].landingImpact</code></td></tr>
+      </table>
+      <p style="color:var(--muted)">※ 2台目をつないだ場合は <code class="inline">sensors[1]</code> で同じように読めます。歩容・ストライド・足角度などは <code class="inline">STEP_ANALYSIS</code> のデータが届いたときに入ります（スターターは両方受信する設定なのでそのままでOK）。</p>
+    </div>
+  </section>
+
+  <!-- ============ LAST ============ -->
+  <section class="block" id="last">
+    <div class="blocklabel"><span class="num" style="background:var(--accent2);color:#fff">LAST</span><span class="sub">発表前 5分</span></div>
+    <h2 class="bh">これからもバイブコーディングを</h2>
+    <div class="card">
+      <ul class="plain">
+        <li>動いている様子を <b>スマホで20秒だけ録画</b>（本番で繋がらない時の保険）。</li>
+        <li>「何を入力にして」「何が起きる作品か」を <b>1文で言える</b>ように。</li>
+        <li>Copilotに <b>どう頼んだら一番うまくいったか</b>、印象的だった1つを共有。</li>
+        <li>スケッチは <b>File &gt; Save</b> か URL 共有で残す。</li>
+      </ul>
+      <div class="note warn">
+        <div class="h">⚠ 大事なこと</div>
+        自然言語でプログラミングできる時代でも、<b>「なぜそう作ったのか」を説明するのはあなた自身</b>です。仕組みやアルゴリズムを聞かれて答えられるよう、出てきたコードはCopilotに解説させて自分でも理解しておきましょう。
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    プロダクトデザイン ハンズオン教材 ／ ORPHE CORE × p5.js × vibe coding<br>
+    リンクが開かない場合はブラウザに直接 URL を貼り付けてください。
+  </div>
+</footer>
+
+<script>
+function copyCode(btn){
+  const pre = btn.closest('.codewrap').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(()=>{
+    const t=btn.textContent; btn.textContent='コピーしました'; 
+    setTimeout(()=>btn.textContent=t,1400);
+  });
+}
+</script>
+</body>
+</html>
