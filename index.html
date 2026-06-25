@@ -427,15 +427,8 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
     </div>
 
     <div class="card">
-      <h3><span class="chip">仕組み</span>スターターの「3つの編集エリア」だけ触る</h3>
-      <p>スターターHTMLの中身は、Copilotが安全に改造できるよう<b>4つのゾーン</b>に分かれています。学生（とCopilot）が触るのは <b>EDIT AREA だけ</b>。接続まわり（SAFE FOUNDATION AREA）は触りません。</p>
-      <table class="roles">
-        <tr><th style="width:210px">ゾーン</th><th>役割／ここで何を変える？</th></tr>
-        <tr><th>COPILOT EDIT AREA 1</th><td>ゲーム設定。速度・大きさ・色・勝利点・AIの強さなど（数字を変えるだけ）。</td></tr>
-        <tr><th>COPILOT EDIT AREA 2</th><td>センサー→操作の対応づけ（<code class="inline">sensorToPaddleY()</code>）。「向き」で動かすか「歩数」で動かすか等。</td></tr>
-        <tr><th>COPILOT EDIT AREA 3</th><td>ゲーム本体。ボール・パドル・描画・ルール。別のゲームに作り替えるならここ。</td></tr>
-        <tr><th>SAFE FOUNDATION AREA</th><td><b>触らない</b>。接続・センサー受信・グラフ。壊すと繋がらなくなります。</td></tr>
-      </table>
+      <h3><span class="chip">仕組み</span>中身は「Safe Area」と「アプリケーションエリア」に分かれています</h3>
+      <p>スターターHTMLは、大きく <b>Safe Area（接続まわり）</b> と <b>アプリケーションエリア（アプリ本体）</b> の2つに分かれています。接続やセンサーの受信は Safe Area が自動でやってくれるので、改造するのはアプリケーションエリアだけ。細かい仕組みを覚える必要はありません。</p>
     </div>
 
     <div class="card">
