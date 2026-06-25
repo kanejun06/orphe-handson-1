@@ -410,19 +410,25 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
     </div>
 
     <div class="card">
-      <h3><span class="chip">最初に1回</span>スターターHTMLを index.html に丸ごと貼る（最重要）</h3>
-      <p>このWSでは、ORPHE開発者の菊川さんが用意した<b>スターターHTML</b>を出発点にします。接続UI・センサーのグラフ・サンプルゲーム（モーションピンポン）が<b>最初から全部入っていて、貼るだけで動きます</b>。ゼロからコードを書く必要はありません。</p>
+      <h3><span class="chip">STEP 1</span>貼って、つないで、遊んでみる（最重要）</h3>
+      <p>このWSでは、ORPHE開発者の菊川さんが用意した<b>スターターHTML</b>を出発点にします。接続UI・センサーのグラフ・サンプルゲーム（モーションピンポン）が<b>最初から全部入っていて、貼るだけで動きます</b>。ゼロからコードを書く必要はありません。まずは改造せず、そのまま動かして接続を確認しましょう。CORE 1台でも、もう片方は自動でAIが操作するのでゲームになります。</p>
       <ol class="steps">
         <li>下のボタンから <code class="inline">orphe_starter.html</code> をダウンロードして開く（中身は触らなくてOK）。</li>
         <li><a href="https://editor.p5js.org" target="_blank" rel="noopener">p5.js Web Editor</a> を開き、左の <code class="inline">index.html</code> を選ぶ。</li>
         <li>index.html の中身を<b>全部消して、スターターHTMLファイルをドラッグ＆ドロップする</b>。</li>
         <li><b>▶ Run</b> すれば、接続ボタンとゲーム画面が出ます。これがスタート地点です。</li>
+        <li>画面上部の <b>「CORE 01」の接続ボタン</b>を押し、ORPHE CORE を選ぶ（Chromeで）。</li>
+        <li>ステータスが <code class="inline">connected</code> になったら、足（センサー）を動かすと左パドルが動きます。右パドルはAIが担当。ラリーが続けば接続成功です。</li>
       </ol>
       <a class="linkbtn" href="orphe_starter.html" download><span class="ic">⬇</span>orphe_starter.html をダウンロード</a>
       <a class="linkbtn" href="orphe_starter.html" target="_blank" rel="noopener"><span class="ic">◷</span>中身を別タブで見る</a>
       <div class="note tip">
         <div class="h">💡 これは「全部入り1ファイル」です</div>
         p5.js Web Editor は通常 index.html / sketch.js / style.css の3ファイル構成ですが、このスターターは <b>index.html 1枚に全部</b>書かれています。だから <code class="inline">sketch.js</code> は使わず、<b>編集はすべて index.html の中で</b>行います。
+      </div>
+      <div class="note tip">
+        <div class="h">💡 接続ダイアログが出ない時</div>
+        Run後のプレビュー枠内でボタンが効かない場合は、ページを新しいタブで開き直してから接続してみてください。Web Bluetooth は「ユーザーがボタンを押した瞬間」しか機器選択を出せない仕様です。CORE未接続でも、<b>キーボードの↑↓キー</b>で左パドルを動かして動作確認できます。
       </div>
     </div>
 
@@ -461,20 +467,6 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
       </div>
     </div>
 
-    <div class="card">
-      <h3><span class="chip">STEP 1</span>貼って、つないで、遊んでみる</h3>
-      <p>まずは改造せず、スターターをそのまま動かして接続を確認します。CORE 1台でも、もう片方は自動でAIが操作するのでゲームになります。</p>
-      <ol class="steps">
-        <li>上の手順でスターターHTMLを index.html に貼り、<b>▶ Run</b>。</li>
-        <li>画面上部の <b>「CORE 01」の接続ボタン</b>を押し、ORPHE CORE を選ぶ（Chromeで）。</li>
-        <li>ステータスが <code class="inline">connected</code> になったら、足（センサー）を動かすと左パドルが動きます。</li>
-        <li>右パドルはAIが担当。ラリーが続けば接続成功です。</li>
-      </ol>
-      <div class="note tip">
-        <div class="h">💡 接続ダイアログが出ない時</div>
-        Run後のプレビュー枠内でボタンが効かない場合は、ページを新しいタブで開き直してから接続してみてください。Web Bluetooth は「ユーザーがボタンを押した瞬間」しか機器選択を出せない仕様です。CORE未接続でも、<b>キーボードの↑↓キー</b>で左パドルを動かして動作確認できます。
-      </div>
-    </div>
   </section>
 
   <!-- ============ BLOCK 2 ============ -->
