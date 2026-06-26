@@ -387,14 +387,14 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
 
     <div class="card">
       <h3><span class="chip">仕組み</span>接続まわりは「全部おまかせ」でOK</h3>
-      <p>このスターターは <b>CoreToolkit.js</b> という仕組みを使っていて、<b>接続・再接続・センサー値の受信を全部自動でやってくれます。</b>だから学生は「どうやって繋ぐか」を書く必要がありません。覚えることはこれだけです。</p>
+      <p>このスターターは <b>CoreToolkit.js</b> という仕組みを使っていて、<b>接続・再接続・センサー値の受信を全部自動でやってくれます。</b>だからみなさんは「どうやって繋ぐか」を書く必要がありません。覚えることはこれだけです。</p>
       <ul class="plain">
         <li>画面の<b>接続ボタンはスターターが最初から表示</b>します（自分で作らない）。</li>
         <li>センサーの値は <code class="inline">sensors[0]</code>（CORE 01）から読みます。例：<code class="inline">sensors[0].euler.pitch</code>（向き）、<code class="inline">sensors[0].acc.x</code>（加速度）、<code class="inline">sensors[0].steps</code>（歩数）。</li>
         <li>新しく <code class="inline">new Orphe()</code> を作ってはいけません（接続が二重になって壊れます）。</li>
       </ul>
       <div class="note tip">
-        <div class="h">💡 つまり学生がやることは</div>
+        <div class="h">💡 つまりみなさんがやることは</div>
         「<b>sensors[0] に入っている値を、ゲームの動きにどう結びつけるか</b>」を考えるだけ。そこをCopilotに頼んで改造していきます。読めるデータの一覧は<a href="#appendix">ページ下部の早見表</a>に。
       </div>
     </div>
