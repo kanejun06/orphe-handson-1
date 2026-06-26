@@ -26,13 +26,17 @@
       - text panels showing connection status and sensor values.
       - Chart.js graphs showing raw Acceleration, Gyro, and Euler Angle values.
     - アプリケーションエリア 1:
-      - GAME settings such as speed, size, colors, winning score, AI behavior.
+      - GAME settings such as time limit, speed, size, colors, AI behavior.
     - アプリケーションエリア 2:
       - sensorToPaddleY() and aiPaddleY().
       - Change these to map ORPHE sensor values to game controls.
     - アプリケーションエリア 3:
       - Game classes and drawing logic.
       - Change Ball, Paddle, drawGame(), scoring, obstacles, goals, rules, etc.
+    - アプリケーションエリア 4:
+      - Sound effects made with p5.MonoSynth.
+      - Change note names, durations, volumes, and setTimeout timing to design
+        new sounds without external audio files.
     - セーフエリア:
       - ORPHE CORE connection, sensor callbacks, normalized quaternion handling,
         Chart.js graph setup, and CoreToolkit setup.
@@ -57,7 +61,7 @@
       chartEuler0, chartAcc1, chartGyro1, chartEuler1 unless you also update the
       setup code.
     - Do not remove the script tags for ORPHE-CORE.js, BleSharedBridge.js,
-      CoreToolkit.js, p5.js, or Chart.js.
+      CoreToolkit.js, p5.js, p5.sound, or Chart.js.
 
     Good Copilot prompts for beginners:
     - "Only edit アプリケーションエリア 1, 2, and 3. Keep セーフエリア.
@@ -68,6 +72,10 @@
        pitch."
     - "Add coins and a timer, but do not touch setupCoreToolkit(),
        attachSensorCallbacks(), setupCharts(), or normalizeQuaternion()."
+    - "Keep the 60 second timer. Change the score rule so collecting coins
+       adds points and the higher score wins when time reaches zero."
+    - "Only edit アプリケーションエリア 4. Make the paddle hit sound shorter and the
+       score sound brighter."
 
     Safe editing rule:
     - If a generated change breaks Bluetooth connection, restore everything in
@@ -88,6 +96,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css"
     >
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/addons/p5.sound.min.js"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.0/chart.min.js"
       integrity="sha512-R60W3LgKdvvfwbGbqKusRu/434Snuvr9/Flhtoq9cj1LQ9P4HFKParULqOCAisHk/J4zyaEWWjiWIMuP13vXEg=="
@@ -279,6 +288,9 @@
         - "Only edit アプリケーションエリア. Change this into a jump game."
         - "Keep セーフエリア. Change the game into a dodge game."
         - "Only change sensorToPaddleY() so steps control the paddle."
+        - "Only edit アプリケーションエリア 4. Change the sound effects."
+        - "Keep the timer and finishGameByTime(). Replace ping pong scoring with
+           a coin score game."
       */
 
       // ============================================================
@@ -287,7 +299,8 @@
       // ============================================================
       const GAME = {
         title: "MOTION PING PONG",
-        winningScore: 3,
+        gameDurationSeconds: 60,
+        pointLimit: null,
         ballSize: 18,
         ballSpeed: 5,
         paddleWidth: 14,
@@ -365,6 +378,10 @@
       let scoreRight = 0;
       let gameState = "ready";
       let messageText = "Connect CORE 01, then move it to play.";
+      let gameStartTimeMs = 0;
+      let remainingSeconds = GAME.gameDurationSeconds;
+      let gameStartedSoundPlayed = false;
+      let winSoundPlayed = false;
 
       class Paddle {
         constructor(side) {
@@ -418,6 +435,7 @@
 
           if (this.y < this.size / 2 || this.y > height - this.size / 2) {
             this.vy *= -1;
+            playWallSound();
           }
 
           this.checkPaddle(leftPaddle);
@@ -443,17 +461,18 @@
           this.vx *= -1.06;
           this.vy = offset * GAME.ballSpeed * 1.4;
           this.x = paddle.side === "left" ? paddle.x + paddle.w + this.size : paddle.x - this.size;
+          playPaddleHitSound();
         }
 
         afterScore(direction) {
-          if (scoreLeft >= GAME.winningScore || scoreRight >= GAME.winningScore) {
-            gameState = "finished";
-            messageText = scoreLeft > scoreRight ? "LEFT PLAYER WINS" : "RIGHT PLAYER WINS";
+          if (GAME.pointLimit && (scoreLeft >= GAME.pointLimit || scoreRight >= GAME.pointLimit)) {
+            finishGameByScore();
             return;
           }
 
           messageText = "Move to continue";
           this.reset(direction);
+          playScoreSound();
         }
 
         draw() {
@@ -464,14 +483,16 @@
       }
 
       function drawGame() {
+        updateGameTimer();
         drawBackground();
         drawCenterLine();
+        drawTimer();
         drawScore();
 
         leftPaddle.update();
         rightPaddle.update();
 
-        if (gameState !== "finished") {
+        if (gameState === "playing") {
           ball.update();
         }
 
@@ -511,8 +532,20 @@
         noStroke();
         fill(255);
         textAlign(CENTER, TOP);
-        textSize(38);
-        text(scoreLeft + " - " + scoreRight, width / 2, 18);
+        textSize(34);
+        text(scoreLeft + " - " + scoreRight, width / 2, 58);
+      }
+
+      function drawTimer() {
+        const seconds = max(0, remainingSeconds);
+        const minutesText = floor(seconds / 60);
+        const secondsText = String(seconds % 60).padStart(2, "0");
+
+        noStroke();
+        fill(seconds <= 10 ? color(255, 238, 180) : color(255));
+        textAlign(CENTER, TOP);
+        textSize(28);
+        text(minutesText + ":" + secondsText, width / 2, 16);
       }
 
       function drawMessage() {
@@ -527,9 +560,133 @@
       function resetGame() {
         scoreLeft = 0;
         scoreRight = 0;
-        gameState = "playing";
+        startTimedGame();
         messageText = "";
+        gameStartedSoundPlayed = true;
+        winSoundPlayed = false;
         ball.reset(random([-1, 1]));
+        playStartSound();
+      }
+
+      // ============================================================
+      // アプリケーションエリア 3B: timer and win condition
+      // Keep this for time-based games. Edit scoreLeft / scoreRight rules to
+      // make coin games, rhythm games, dodge games, or step-count challenges.
+      // ============================================================
+      function startTimedGame() {
+        gameState = "playing";
+        gameStartTimeMs = millis();
+        remainingSeconds = GAME.gameDurationSeconds;
+      }
+
+      function updateGameTimer() {
+        if (gameState !== "playing") return;
+
+        const elapsedSeconds = floor((millis() - gameStartTimeMs) / 1000);
+        remainingSeconds = max(0, GAME.gameDurationSeconds - elapsedSeconds);
+
+        if (remainingSeconds <= 0) {
+          finishGameByTime();
+        }
+      }
+
+      function finishGameByTime() {
+        gameState = "finished";
+        remainingSeconds = 0;
+
+        if (scoreLeft === scoreRight) {
+          messageText = "TIME UP - DRAW";
+        } else {
+          messageText = scoreLeft > scoreRight ? "TIME UP - LEFT WINS" : "TIME UP - RIGHT WINS";
+        }
+
+        playWinSoundOnce();
+      }
+
+      function finishGameByScore() {
+        gameState = "finished";
+        messageText = scoreLeft > scoreRight ? "LEFT PLAYER WINS" : "RIGHT PLAYER WINS";
+        playWinSoundOnce();
+      }
+
+      // ============================================================
+      // アプリケーションエリア 4: sound effects with p5.MonoSynth
+      // p5.MonoSynth creates short notes in the browser. No audio files needed.
+      // To design a new sound:
+      // 1. Pick the scene, such as paddle hit, wall hit, score, win, item pickup.
+      // 2. Choose 1 to 4 note names, such as "C5", "E5", "G5", "C6".
+      // 3. Use setTimeout() to play short note sequences.
+      // 4. Keep each note short, usually 0.03 to 0.20 seconds.
+      // 5. Call userStartAudio() once after a click or key press if audio is locked.
+      // Try keys 1, 2, 3, 4 while testing:
+      // 1 = paddle hit, 2 = wall hit, 3 = score, 4 = win.
+      // ============================================================
+      let hitSynth;
+      let wallSynth;
+      let scoreSynth;
+      let winSynth;
+      let audioReady = false;
+
+      function setupSoundEffects() {
+        hitSynth = new p5.MonoSynth();
+        wallSynth = new p5.MonoSynth();
+        scoreSynth = new p5.MonoSynth();
+        winSynth = new p5.MonoSynth();
+
+        hitSynth.oscillator.setType("triangle");
+        wallSynth.oscillator.setType("sine");
+        scoreSynth.oscillator.setType("square");
+        winSynth.oscillator.setType("sawtooth");
+      }
+
+      function unlockAudio() {
+        if (audioReady) return;
+        if (typeof userStartAudio === "function") userStartAudio();
+        audioReady = true;
+      }
+
+      function playPaddleHitSound() {
+        if (!audioReady || !hitSynth) return;
+        hitSynth.play("G5", 0.18, 0, 0.04);
+        setTimeout(function () {
+          hitSynth.play("D6", 0.12, 0, 0.03);
+        }, 45);
+      }
+
+      function playWallSound() {
+        if (!audioReady || !wallSynth) return;
+        wallSynth.play("C4", 0.12, 0, 0.04);
+      }
+
+      function playScoreSound() {
+        if (!audioReady || !scoreSynth) return;
+        scoreSynth.play("C5", 0.24, 0, 0.08);
+        setTimeout(function () {
+          scoreSynth.play("E5", 0.2, 0, 0.08);
+        }, 80);
+        setTimeout(function () {
+          scoreSynth.play("G5", 0.18, 0, 0.08);
+        }, 160);
+      }
+
+      function playStartSound() {
+        if (!audioReady || !scoreSynth) return;
+        scoreSynth.play("C5", 0.16, 0, 0.06);
+        setTimeout(function () {
+          scoreSynth.play("G5", 0.14, 0, 0.06);
+        }, 90);
+      }
+
+      function playWinSoundOnce() {
+        if (winSoundPlayed || !audioReady || !winSynth) return;
+        winSoundPlayed = true;
+        winSynth.play("E5", 0.24, 0, 0.12);
+        setTimeout(function () {
+          winSynth.play("G5", 0.24, 0, 0.12);
+        }, 150);
+        setTimeout(function () {
+          winSynth.play("C6", 0.28, 0, 0.18);
+        }, 300);
       }
 
       // ============================================================
@@ -545,6 +702,7 @@
         leftPaddle = new Paddle("left");
         rightPaddle = new Paddle("right");
 
+        setupSoundEffects();
         setupCoreToolkit();
         setupCharts();
         updateStatusText();
@@ -563,11 +721,21 @@
       }
 
       function mousePressed() {
+        unlockAudio();
         if (gameState === "finished") resetGame();
+        if (gameState === "playing" && !gameStartedSoundPlayed) {
+          gameStartedSoundPlayed = true;
+          playStartSound();
+        }
       }
 
       function keyPressed() {
+        unlockAudio();
         if (key === "r" || key === "R") resetGame();
+        if (key === "1") playPaddleHitSound();
+        if (key === "2") playWallSound();
+        if (key === "3") playScoreSound();
+        if (key === "4") playWinSoundOnce();
 
         // Keyboard fallback for testing without CORE before the workshop.
         if (keyCode === UP_ARROW) sensors[0].euler.pitch += 0.15;
@@ -616,11 +784,16 @@
 
       function attachSensorCallbacks(ble, id) {
         ble.onConnect = function () {
+          unlockAudio();
           sensors[id].connected = true;
           sensors[id].status = "connected";
           if (id === 0 && gameState === "ready") {
-            gameState = "playing";
+            startTimedGame();
             messageText = "";
+            if (!gameStartedSoundPlayed) {
+              gameStartedSoundPlayed = true;
+              playStartSound();
+            }
           }
           updateStatusText();
         };
