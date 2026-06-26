@@ -236,8 +236,8 @@
       <a href="#copilot-basics"><span class="n">BASIC</span><div class="t">Copilotの話しかけ方</div><div class="s">vibe coding の基本</div></a>
       <a href="#b1"><span class="n">BLOCK 1</span><div class="t">つなぐ</div><div class="s">スターターを貼って接続</div></a>
       <a href="#b2"><span class="n">BLOCK 2</span><div class="t">観察する</div><div class="s">内蔵グラフで値を見る</div></a>
-      <a href="#b3"><span class="n">BLOCK 3</span><div class="t">改造する</div><div class="s">アプリケーションエリアをCopilotで</div></a>
-      <a href="#inspo"><span class="n">EXAMPLES</span><div class="t">こんなものも作れる</div><div class="s">公式作例 / 企画ブレスト</div></a>
+      <a href="#inspo"><span class="n">EXAMPLES</span><div class="t">企画を決める</div><div class="s">公式作例 / グループでブレスト</div></a>
+      <a href="#b3"><span class="n">BLOCK 3</span><div class="t">つくる</div><div class="s">決めた企画をプロトタイプに</div></a>
       <a href="#appendix"><span class="n">APPENDIX</span><div class="t">関数名 早見表</div><div class="s">取れるデータ一覧</div></a>
     </nav>
 
@@ -286,10 +286,10 @@
       <h3><span class="chip">90分</span>当日の流れ（タイムテーブル）</h3>
       <table class="roles">
         <tr><th>0:00–0:10</th><td><b>導入・グループ分け。</b>Copilotと ORPHE CORE の説明、5人の役割決め。</td></tr>
-        <tr><th>0:10–0:25</th><td><b>BLOCK 1 つなぐ。</b>スターターHTMLを貼って Run、CORE に接続。サンプルゲームで遊んで全員「つながった！」を体験。</td></tr>
-        <tr><th>0:25–0:40</th><td><b>BLOCK 2 観察する。</b>内蔵グラフを見ながら足を動かし、どの動きがどの値に効くかを確認。</td></tr>
-        <tr><th>0:40–0:50</th><td><b>企画ブレスト（EXAMPLES）。</b>作例に触れ、<b>グループで話し合って</b>作るものを1つに決める（迷ったらCopilotにアイデア出しを手伝ってもらう）。</td></tr>
-        <tr><th>0:50–1:15</th><td><b>BLOCK 3 改造する（制作）。</b>アプリケーションエリアをCopilotで1つずつ改造して、企画を形に。</td></tr>
+        <tr><th>0:10–0:25</th><td><b>BLOCK 1 つなぐ（STEP 1）。</b>スターターHTMLを貼って Run、CORE に接続。サンプルゲームで遊んで全員「つながった！」を体験。</td></tr>
+        <tr><th>0:25–0:40</th><td><b>BLOCK 2 観察する（STEP 2）。</b>内蔵グラフを見ながら足を動かし、どの動きがどの値に効くかを確認。</td></tr>
+        <tr><th>0:40–0:50</th><td><b>企画ブレスト（EXAMPLES → BRAINSTORM）。</b>作例に触れ、<b>グループで話し合って</b>作るものを1つに決める（迷ったらCopilotにアイデア出しを手伝ってもらう）。</td></tr>
+        <tr><th>0:50–1:15</th><td><b>BLOCK 3 つくる（STEP 3〜5）。</b>決めた企画を、アプリケーションエリアを1つずつ改造してプロトタイプに。ピンポンの土台を出発点に、自分たちの作品へ。</td></tr>
         <tr><th>1:15–1:30</th><td><b>発表・ふりかえり。</b>各グループ1〜2分でデモ、Copilotの使い方を共有。</td></tr>
       </table>
       <p style="color:var(--muted)">※ つまずいたBLOCKがあっても先に進んでOK。「一番簡単な1つ」に絞るのが、90分で完成させるコツです。</p>
@@ -486,11 +486,63 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
     </div>
   </section>
 
+  <!-- ============ INSPIRATION ============ -->
+  <section class="block" id="inspo">
+    <div class="blocklabel"><span class="num" style="background:var(--accent2);color:#fff">INSPIRATION</span><span class="sub">こんなものも作れる ／ 公式 Examples</span></div>
+    <h2 class="bh">バイブコーディングで、ここまで作れる</h2>
+    <p class="blockdesc">下は ORPHE 公式が公開している作例です。<b>どれも「足の動き」を入力にした、CORE 1台で動くWebアプリ</b>に絞ってあります（今回は1グループ1台なので）。実際に動くので、企画のヒントに触ってみてください。「こういうのを作りたい」と思ったら、その動きの仕組み（例：踏み込みで判定／向きで操作）をCopilotに伝えるのが第一歩です。</p>
+
+    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ ゲーム・スポーツ</h3>
+    <div class="gallery">
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-HURDLE/" target="_blank" rel="noopener"><span class="emoji">🏃</span><span class="gt">110m ハードル走</span><span class="gs">足の動きで走る陸上ゲーム</span><span class="gtag">Virtual Sports</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-UDON/" target="_blank" rel="noopener"><span class="emoji">🍜</span><span class="gt">うどんふみふみ</span><span class="gs">足踏みでうどんをこねる</span><span class="gtag">Game</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/MOVEYOURFEET/" target="_blank" rel="noopener"><span class="emoji">👟</span><span class="gt">足パタパタ</span><span class="gs">足を動かして遊ぶ運動ゲーム</span><span class="gtag">Exercise</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-DDR/" target="_blank" rel="noopener"><span class="emoji">💃</span><span class="gt">DDR</span><span class="gs">音楽×足の動きのリズムゲーム</span><span class="gtag">Rhythm</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-PINGPONG/" target="_blank" rel="noopener"><span class="emoji">🏓</span><span class="gt">ピンポン</span><span class="gs">1台ならAIと対戦できる（今回の土台）</span><span class="gtag">Game</span></a>
+    </div>
+
+    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ 音・ビジュアル表現</h3>
+    <div class="gallery">
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/drum_test/" target="_blank" rel="noopener"><span class="emoji">🥁</span><span class="gt">ジェスチャードラム</span><span class="gs">足の動きで音を鳴らす</span><span class="gtag">Sound</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GESTURE-DEMO/" target="_blank" rel="noopener"><span class="emoji">✨</span><span class="gt">ジェスチャー検出</span><span class="gs">つま先/かかと/踏み込みを判定</span><span class="gtag">Gesture</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/POSE/" target="_blank" rel="noopener"><span class="emoji">🕺</span><span class="gt">POSE</span><span class="gs">カメラの姿勢推定×足センサー</span><span class="gtag">Creative</span></a>
+      <a href="https://editor.p5js.org/tetsuakibaba/sketches/waUWo6ZZN" target="_blank" rel="noopener"><span class="emoji">📦</span><span class="gt">3DBOX</span><span class="gs">向きに連動して回る立方体</span><span class="gtag">p5.js</span></a>
+    </div>
+
+    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ 計測・可視化（気づきを得る）</h3>
+    <div class="gallery">
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/VISUALIZE/" target="_blank" rel="noopener"><span class="emoji">📈</span><span class="gt">VISUALIZE</span><span class="gs">センサー値をグラフで可視化</span><span class="gtag">Chart</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/FOOT%20ANGLE/" target="_blank" rel="noopener"><span class="emoji">📐</span><span class="gt">FOOT ANGLE</span><span class="gs">接地角・足の角度を可視化</span><span class="gtag">Gait</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/PRONATION/" target="_blank" rel="noopener"><span class="emoji">🦶</span><span class="gt">PRONATION</span><span class="gs">着地時の内/外の倒れを表示</span><span class="gtag">Gait</span></a>
+      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/AIRWALKER/" target="_blank" rel="noopener"><span class="emoji">📊</span><span class="gt">AIR WALKER</span><span class="gs">歩数・活動量ダッシュボード</span><span class="gtag">Dashboard</span></a>
+    </div>
+
+    <a class="linkbtn" href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/" target="_blank" rel="noopener"><span class="ic">✦</span>すべての Examples を見る（公式ギャラリー）</a>
+
+    <div class="note tip">
+      <div class="h">💡 作例から企画につなげる頼み方</div>
+      気になった作例があったら、Copilotにこう伝えてみてください ——「<b>ORPHEの足センサーで、〇〇（例：踏み込むとドラムが鳴る）みたいなものを作りたい。まず一番簡単な形から手伝って。</b>」。完成品をそのままコピーするのではなく、<u>その作品の“核になる1つの動き”だけ</u>を真似るのが、90分で動かすコツです。
+    </div>
+
+    <div class="card">
+      <h3><span class="chip do">BRAINSTORM</span>企画を1つに決める（グループで話し合って）</h3>
+      <p>作るものは <b>グループで話し合って1つに決めます</b>。アイデア出しに迷ったら、下のプロンプトでCopilotに候補を出させて“たたき台”にしてもOK。ただし <b>どれを作るかはグループで決定</b> してください。決めたらBLOCK3の制作へ進みます。</p>
+      <div class="codewrap">
+        <div class="codehead"><span class="fn">brainstorm.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
+        <pre class="prompt">足に着けるセンサーで、加速度・向き・歩数・踏み込みが取れます。
+これを使った、90分で作れる簡単な作品アイデアを
+「ゲーム」「ビジュアル」「音」「測定・気づき」の4方向で
+3つずつ、各1行で出してください。実装が重いものは避けてください。</pre>
+      </div>
+      <p style="color:var(--muted)">出た案は必ず「いちばん簡単に試せる1つ」に絞ってから作り始めること。欲張ると90分で動きません。</p>
+    </div>
+  </section>
+
   <!-- ============ BLOCK 3 ============ -->
   <section class="block" id="b3">
-    <div class="blocklabel"><span class="num">BLOCK 3</span><span class="sub">動きを変える ／ ビジュアル・音・スコア</span></div>
-    <h2 class="bh">動きを「何か」に結びつける</h2>
-    <p class="blockdesc">値を、目に見える変化・音・スコアに変換します。ここがグループのアイデアを入れる場所。<b>1機能ずつ</b>足すのがコツです。</p>
+    <div class="blocklabel"><span class="num">BLOCK 3</span><span class="sub">つくる ／ 企画をビジュアル・音・スコアで形に（STEP 3〜5）</span></div>
+    <h2 class="bh">決めた企画を、プロトタイプにする</h2>
+    <p class="blockdesc">ブレストで決めた企画を、ここで<b>プロトタイプ</b>にします。ピンポンの土台はあくまで出発点。動きを<b>ビジュアル・音・スコア</b>に結びつけて、自分たちの作品に作り替えていきます。<b>1機能ずつ</b>足すのがコツです。</p>
 
     <div class="card">
       <h3><span class="chip do">STEP 3</span>操作を変えてみる（アプリケーションエリア）</h3>
@@ -548,58 +600,6 @@ ORPHE本体を体に近づける・充電する、で改善することがあり
         <div class="h">💡 音づくりのコツ</div>
         一度に全部ではなく、まず「パドルの音」だけ変えて鳴らしてみる。気に入ったら次の音へ。「もっと高く／低く／短く／長く」と言葉で頼めばOKです。
       </div>
-    </div>
-  </section>
-
-  <!-- ============ INSPIRATION ============ -->
-  <section class="block" id="inspo">
-    <div class="blocklabel"><span class="num" style="background:var(--accent2);color:#fff">INSPIRATION</span><span class="sub">こんなものも作れる ／ 公式 Examples</span></div>
-    <h2 class="bh">バイブコーディングで、ここまで作れる</h2>
-    <p class="blockdesc">下は ORPHE 公式が公開している作例です。<b>どれも「足の動き」を入力にした、CORE 1台で動くWebアプリ</b>に絞ってあります（今回は1グループ1台なので）。実際に動くので、企画のヒントに触ってみてください。「こういうのを作りたい」と思ったら、その動きの仕組み（例：踏み込みで判定／向きで操作）をCopilotに伝えるのが第一歩です。</p>
-
-    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ ゲーム・スポーツ</h3>
-    <div class="gallery">
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-HURDLE/" target="_blank" rel="noopener"><span class="emoji">🏃</span><span class="gt">110m ハードル走</span><span class="gs">足の動きで走る陸上ゲーム</span><span class="gtag">Virtual Sports</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-UDON/" target="_blank" rel="noopener"><span class="emoji">🍜</span><span class="gt">うどんふみふみ</span><span class="gs">足踏みでうどんをこねる</span><span class="gtag">Game</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/MOVEYOURFEET/" target="_blank" rel="noopener"><span class="emoji">👟</span><span class="gt">足パタパタ</span><span class="gs">足を動かして遊ぶ運動ゲーム</span><span class="gtag">Exercise</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-DDR/" target="_blank" rel="noopener"><span class="emoji">💃</span><span class="gt">DDR</span><span class="gs">音楽×足の動きのリズムゲーム</span><span class="gtag">Rhythm</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GAME-PINGPONG/" target="_blank" rel="noopener"><span class="emoji">🏓</span><span class="gt">ピンポン</span><span class="gs">1台ならAIと対戦できる（今回の土台）</span><span class="gtag">Game</span></a>
-    </div>
-
-    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ 音・ビジュアル表現</h3>
-    <div class="gallery">
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/drum_test/" target="_blank" rel="noopener"><span class="emoji">🥁</span><span class="gt">ジェスチャードラム</span><span class="gs">足の動きで音を鳴らす</span><span class="gtag">Sound</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/GESTURE-DEMO/" target="_blank" rel="noopener"><span class="emoji">✨</span><span class="gt">ジェスチャー検出</span><span class="gs">つま先/かかと/踏み込みを判定</span><span class="gtag">Gesture</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/POSE/" target="_blank" rel="noopener"><span class="emoji">🕺</span><span class="gt">POSE</span><span class="gs">カメラの姿勢推定×足センサー</span><span class="gtag">Creative</span></a>
-      <a href="https://editor.p5js.org/tetsuakibaba/sketches/waUWo6ZZN" target="_blank" rel="noopener"><span class="emoji">📦</span><span class="gt">3DBOX</span><span class="gs">向きに連動して回る立方体</span><span class="gtag">p5.js</span></a>
-    </div>
-
-    <h3 style="margin:18px 0 4px; font-size:16px; color:var(--accent)">▸ 計測・可視化（気づきを得る）</h3>
-    <div class="gallery">
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/VISUALIZE/" target="_blank" rel="noopener"><span class="emoji">📈</span><span class="gt">VISUALIZE</span><span class="gs">センサー値をグラフで可視化</span><span class="gtag">Chart</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/FOOT%20ANGLE/" target="_blank" rel="noopener"><span class="emoji">📐</span><span class="gt">FOOT ANGLE</span><span class="gs">接地角・足の角度を可視化</span><span class="gtag">Gait</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/PRONATION/" target="_blank" rel="noopener"><span class="emoji">🦶</span><span class="gt">PRONATION</span><span class="gs">着地時の内/外の倒れを表示</span><span class="gtag">Gait</span></a>
-      <a href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/AIRWALKER/" target="_blank" rel="noopener"><span class="emoji">📊</span><span class="gt">AIR WALKER</span><span class="gs">歩数・活動量ダッシュボード</span><span class="gtag">Dashboard</span></a>
-    </div>
-
-    <a class="linkbtn" href="https://orphe-oss.github.io/ORPHE-CORE.js/examples/" target="_blank" rel="noopener"><span class="ic">✦</span>すべての Examples を見る（公式ギャラリー）</a>
-
-    <div class="note tip">
-      <div class="h">💡 作例から企画につなげる頼み方</div>
-      気になった作例があったら、Copilotにこう伝えてみてください ——「<b>ORPHEの足センサーで、〇〇（例：踏み込むとドラムが鳴る）みたいなものを作りたい。まず一番簡単な形から手伝って。</b>」。完成品をそのままコピーするのではなく、<u>その作品の“核になる1つの動き”だけ</u>を真似るのが、90分で動かすコツです。
-    </div>
-
-    <div class="card">
-      <h3><span class="chip do">BRAINSTORM</span>企画を1つに決める（グループで話し合って）</h3>
-      <p>作るものは <b>グループで話し合って1つに決めます</b>。アイデア出しに迷ったら、下のプロンプトでCopilotに候補を出させて“たたき台”にしてもOK。ただし <b>どれを作るかはグループで決定</b> してください。決めたらBLOCK3の制作へ進みます。</p>
-      <div class="codewrap">
-        <div class="codehead"><span class="fn">brainstorm.txt</span><button class="copybtn" onclick="copyCode(this)">コピー</button></div>
-        <pre class="prompt">足に着けるセンサーで、加速度・向き・歩数・踏み込みが取れます。
-これを使った、90分で作れる簡単な作品アイデアを
-「ゲーム」「ビジュアル」「音」「測定・気づき」の4方向で
-3つずつ、各1行で出してください。実装が重いものは避けてください。</pre>
-      </div>
-      <p style="color:var(--muted)">出た案は必ず「いちばん簡単に試せる1つ」に絞ってから作り始めること。欲張ると90分で動きません。</p>
     </div>
   </section>
 
